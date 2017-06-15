@@ -1,5 +1,4 @@
 #include "drone.h"
-#include "fonctions.h"
 
 /*Fonction qui initialise les colis*/
 Drone_t Init_drone(int i, Drone_t drone){
@@ -13,25 +12,30 @@ Drone_t Init_drone(int i, Drone_t drone){
 
 void recharger(Drone_t drone){
     if(drone.autonomie == 0){
+        pthread_mutex_lock(&drone.mDrone);
         drone.status = 1;
-        //sleep();
+        Sleep(5000);
         drone.status = 0;
+        pthread_mutex_unlock(&drone.mDrone);
     }
 }
 
 Drone_t prendreColis(Drone_t drone, Colis_t Colis){
     if(drone.charge>=Colis.poids){
         if(drone.autonomie>=Colis.temps){
+            pthread_mutex_lock(&Colis.mColis);
             drone.colis = Colis;
             drone.status = 0;
             vaisseau.NBColis--;
+            pthread_mutex_unlock(&Colis.mColis);
         }
     }
     return drone;
 }
 
 void* fonction_drone(void* arg){
-    //int i = (int) arg;
-    //drone[i] = Init_drone(i, drone[i]);
+    int i = (int) arg;
+    pthread_mutex_lock(&drone[i].mDrone);
+    pthread_mutex_unlock(&drone[i].mDrone);
     pthread_exit(NULL);
 }

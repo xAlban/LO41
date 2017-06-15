@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <time.h>
 #include "structure.h"
+#include "fonctions.h"
 
 void* fonction_vaisseau(void* arg);
 Slot_t initAllColis(int i);
