@@ -1,5 +1,5 @@
 #include "vaisseau.h"
-#include "fonctions.h"
+
 
 /*Fonction qui initialise les drones*/
 //i pour le numero de colis et j pour le numero du slot
@@ -16,7 +16,7 @@ Colis_t Init_colis(int i, int j, Colis_t colis){
 Slot_t initAllColis(int i){
     vaisseau.slot[i].NBColisSlot = 0;
     int j;
-        for(j = 1; j<=NB_COLIS; ++j){
+        for(j = 0; j<NB_COLIS; ++j){
             vaisseau.slot[i].colis[j] = Init_colis(i, j, vaisseau.slot[i].colis[j]);
             vaisseau.slot[i].NBColisSlot++;
         }
@@ -26,42 +26,42 @@ Slot_t initAllColis(int i){
 Slot_t triColis(Slot_t slot){
     /*Tri par priorite*/
     Colis_t tmp;
-    int i;
-    int j;
+    int i, j;
+    int l = 0;
     int k = NB_COLIS;
-    BOOL boolean = FALSE;
 
-    while(boolean){
-        j = 1;
-        for(i = 1; i<=k; ++i){
-            if(slot.colis[i].priorite>slot.colis[j].priorite){
-                tmp = slot.colis[i];
-                slot.colis[i] = slot.colis[j];
+    for(i =0 ; i<k; ++i){
+        for(j = i+1; j<k; ++j){
+            //printf("j = %d\n", j);
+            //printf("colis %d priorite %d> colis %d priorite %d\n", l, slot.colis[l].priorite, j, slot.colis[j].priorite);
+            if(slot.colis[l].priorite>slot.colis[j].priorite){
+                //printf("VRAI\n");
+                tmp = slot.colis[l];
+                slot.colis[l] = slot.colis[j];
                 slot.colis[j] = tmp;
-                j++;
+            }else{
+                //printf("FAUX\n");
             }
         }
-        boolean = TRUE;
+        l++;
     }
 
-    /*Tri en fonction du temps de livraison*/
-    boolean = FALSE;
-    while(boolean){
-        j = 1;
-        for(i = 1; i<=k; ++i){
-            if(slot.colis[i].priorite==slot.colis[j].priorite){
-                if(slot.colis[i].temps>slot.colis[j].temps){
-                    tmp = slot.colis[i];
-                    slot.colis[i] = slot.colis[j];
+    l = 0;
+    /*Tri en fonction par priorite et par le temps de livraison croissant*/
+    for(i = 0; i<k; ++i){
+        for(j = i+1; j<k; ++j){
+            if(slot.colis[l].priorite==slot.colis[j].priorite){
+                if(slot.colis[l].temps>slot.colis[j].temps){
+                    tmp = slot.colis[l];
+                    slot.colis[l] = slot.colis[j];
                     slot.colis[j] = tmp;
-                    j++;
                 }
             }
         }
-        boolean = TRUE;
+        l++;
     }
-    printf("TRI\n");
-    for(i = 1; i<=k; ++i){
+    //printf("TRI\n");
+    for(i = 0; i<k; ++i){
             printf("Colis pour client %d, priorite %d, temps %d\n", slot.colis[i].ID_client, slot.colis[i].priorite, slot.colis[i].temps);
     }
     return slot;
@@ -70,6 +70,7 @@ Slot_t triColis(Slot_t slot){
 void* fonction_vaisseau(void* arg){
     //int i = (int) arg;
     //int j;
+    pthread_mutex_lock(&vaisseau.mVaisseau);
     /*vaisseau.slot[i].NBColisSlot = 0;
     vaisseau.Status = 0;
     if(vaisseau.Status == 0){
@@ -86,6 +87,7 @@ void* fonction_vaisseau(void* arg){
     }else if(vaisseau.Status == 1){
 
     }*/
+    pthread_mutex_unlock(&vaisseau.mVaisseau);
     pthread_exit(NULL);
 }
 
