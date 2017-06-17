@@ -10,24 +10,26 @@ Drone_t Init_drone(int i, Drone_t drone){
     return drone;
 }
 
+/*Fonction pour que le drone se recharge son autonomie*/
 void recharger(Drone_t drone){
     if(drone.autonomie == 0){
-        pthread_mutex_lock(&drone.mDrone);
+        pthread_mutex_lock(&mDrone);
         drone.status = 1;
         Sleep(5000);
         drone.status = 0;
-        pthread_mutex_unlock(&drone.mDrone);
+        pthread_mutex_unlock(&mDrone);
     }
 }
 
+/*Fonction pour prendre le colis du slot*/
 Drone_t prendreColis(Drone_t drone, Colis_t Colis){
     if(drone.charge>=Colis.poids){
         if(drone.autonomie>=Colis.temps){
-            pthread_mutex_lock(&Colis.mColis);
+            pthread_mutex_lock(&mColis);
             drone.colis = Colis;
             drone.status = 0;
             vaisseau.NBColis--;
-            pthread_mutex_unlock(&Colis.mColis);
+            pthread_mutex_unlock(&mColis);
         }
     }
     return drone;
@@ -35,7 +37,16 @@ Drone_t prendreColis(Drone_t drone, Colis_t Colis){
 
 void* fonction_drone(void* arg){
     int i = (int) arg;
-    pthread_mutex_lock(&drone[i].mDrone);
-    pthread_mutex_unlock(&drone[i].mDrone);
+    while(1){
+        pthread_mutex_lock(&mDrone);
+        if(vaisseau.NBColis<=0){
+            pthread_cond_signal(&cVaisseau);
+            pthread_cond_wait(&cDrone, &mVaisseau);
+        }
+        vaisseau.NBColis--;
+        printf("Drone %d a pris un colis, la il reste %d colis\n", i, vaisseau.NBColis);
+
+        pthread_mutex_unlock(&mDrone);
+    }
     pthread_exit(NULL);
 }

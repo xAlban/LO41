@@ -63,16 +63,15 @@ void initAll(){
     printf("Initialisation des clients\n");
     for(i = 0; i<NB_CLIENT; ++i){
         client[i] = initClient(i, client[i]);
-        pthread_mutex_init(&client[i].mClient, NULL);
     }
     printf("\n\n");
     printf("Initialisation des drones\n");
     for(j = 0; j<NB_DRONE; ++j){
         drone[j] = Init_drone(j, drone[j]);
-        pthread_mutex_init(&drone[i].mDrone, NULL);
     }
     printf("\n\n");
     printf("Initialisation des slots et des colis\n");
+    vaisseau.NBColis = 0;
     for(k = 0; k<NB_SLOT-1; ++k){
         printf("Slot %d\n", k);
         vaisseau.slot[k] = initAllColis(k);
@@ -85,6 +84,21 @@ void initAll(){
     }
     printf("\n\n");
 
-    vaisseau.cVaisseau = PTHREAD_COND_INITIALIZER;
+    printf("Initialisation des mutex\n");
+    pthread_mutex_init(&mClient, NULL);
+    pthread_mutex_init(&mVaisseau, NULL);
+    pthread_mutex_init(&mColis, NULL);
+    pthread_mutex_init(&mDrone, NULL);
+
+    /*mClient = PTHREAD_MUTEX_INITIALIZER;
+    mColis = PTHREAD_MUTEX_INITIALIZER;
+    mDrone = PTHREAD_MUTEX_INITIALIZER;
+    mVaisseau = PTHREAD_MUTEX_INITIALIZER;*/
+
+    cVaisseau = PTHREAD_COND_INITIALIZER;
+    cColis = PTHREAD_COND_INITIALIZER;
+    cDrone = PTHREAD_COND_INITIALIZER;
+    cClient = PTHREAD_COND_INITIALIZER;
+    printf("\n\n");
 }
 
