@@ -4,12 +4,14 @@
 /*Fonction qui initialise les drones*/
 //i pour le numero de colis et j pour le numero du slot
 Colis_t Init_colis(int i, int j, Colis_t colis){
-    colis.ID_client = get_random(NB_CLIENT);
-    colis.priorite =  get_random(3);
-    colis.poids = get_random(drone[j].charge);
-    colis.temps = get_random(AUTONOMIE);
+    colis.ID_client = get_random(NB_CLIENT,0);
+    colis.priorite =  get_random(3,1);
+    colis.poids = get_random(drone[j].charge,1);
+    colis.temps = get_random(AUTONOMIE,1);
     colis.zone = client[colis.ID_client].zone;
-    printf("Colis pour client %d a pour priorite %d, pour un temps maxi %d min, et pese %d a pour destination %d\n", colis.ID_client, colis.priorite, colis.temps, colis.poids, colis.zone);
+    colis.etat = get_random(2,1);
+    client[colis.ID_client].NBColis++;
+    printf("Colis pour client %d a pour priorite %d, pour un temps maxi %d min, et pese %d a pour destination %d, et l'etat du colis est %d\n", colis.ID_client, colis.priorite, colis.temps, colis.poids, colis.zone, colis.etat);
     return colis;
 }
 
@@ -38,15 +40,11 @@ Slot_t triColis(Slot_t slot){
     /*Tri par priorite*/
     for(i =0 ; i<k; ++i){
         for(j = i+1; j<k; ++j){
-            //printf("j = %d\n", j);
-            //printf("colis %d priorite %d> colis %d priorite %d\n", l, slot.colis[l].priorite, j, slot.colis[j].priorite);
             if(slot.colis[l].priorite>slot.colis[j].priorite){
                 //printf("VRAI\n");
                 tmp = slot.colis[l];
                 slot.colis[l] = slot.colis[j];
                 slot.colis[j] = tmp;
-            }else{
-                //printf("FAUX\n");
             }
         }
         l++;
@@ -74,17 +72,14 @@ Slot_t triColis(Slot_t slot){
 }
 
 void* fonction_vaisseau(void* arg){
-    //int i = (int) arg;
-    //int j;
-    while(1){
+    Vaisseau_t *vaisseau = (Vaisseau_t*) arg;
+    while(vaisseau->NBColis > 0){
         pthread_mutex_lock(&mVaisseau);
         pthread_cond_wait(&cVaisseau, &mVaisseau);
         printf("REMPLISSAGE COLIS\n");
-        vaisseau.NBColis = (NB_SLOT-1) * NB_COLIS;
+        vaisseau->NBColis = (NB_SLOT-1) * NB_COLIS;
         pthread_cond_signal(&cDrone);
         pthread_mutex_unlock(&mVaisseau);
     }
     pthread_exit(NULL);
 }
-
-

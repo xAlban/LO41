@@ -6,7 +6,7 @@
 #define NB_DRONE 2 //nombre de drone
 #define NB_COLIS 2 //nombre de colis
 #define AUTONOMIE 30 //capacite d'autonomie du drone
-#define NB_CLIENT 2
+#define NB_CLIENT 3
 #define NB_SLOT NB_DRONE+1 // nombre de slot et le dernier slot correspond au colis dommagee ou tromper
 #define ZONE 2
 
@@ -18,6 +18,11 @@
 typedef struct Client{
     int ID;
     int zone;
+    int NBColis;
+    int etat; // 1 pour la, 2 pour absent
+    //pthread_mutex_t mClient;
+    //pthread_cond_t cClient;
+
 }Client_t;
 
 typedef struct Colis{
@@ -26,15 +31,21 @@ typedef struct Colis{
     int temps; //temps necessaire pour arriver a destination
     int zone;
     int poids; //poids du colis
+    int etat; //1 pour colis correct, 2 colis mauvais
+     //pthread_mutex_t mColis;
+    //pthread_cond_t cColis;
 }Colis_t;
 
 typedef struct Drone{
+    int ID_drone;
     int slot;
-    int status; //-2 pour perdu, -1 pour en charge, 0 pour pret, 1 pour dans le vaisseau, 2 pour en cours de livraison, 3 pour livrer
+    int status; //-2 pour perdu, -1 pour en charge, 0 pour pret, 1 pour dans le vaisseau, 2 pour en cours de livraison, 3 pour livrer, 4 pour backhome
     int charge; // poids total qui peut transporte
     int autonomie;
-    int zone; //0 pour dans le vaisseau, -1 pour perdu
+    int zone; //0 pour dans le vaisseau, -1 pour perdu, et  les autre zones pour aller a destination
     Colis_t colis; // pour donner un colis au drone
+     //pthread_mutex_t mDrone;
+    //pthread_cond_t cDrone;
 }Drone_t;
 
 typedef struct Slot{
@@ -51,8 +62,11 @@ typedef struct Vaisseau{
     int NBDronePerdu;
 	int Status; //0 sur terre, 1 en l'air
 	int NBDroneRepos;
+	 //pthread_mutex_t mVaisseau;
+    //pthread_cond_t cVaisseau;
 }Vaisseau_t;
 
+pthread_t t_drone[NB_DRONE], t_vaisseau, t_client[NB_CLIENT];
 pthread_mutex_t mVaisseau, mClient, mDrone, mColis;
 pthread_cond_t cVaisseau, cClient, cDrone, cColis;
 
