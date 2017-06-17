@@ -13,6 +13,10 @@ Colis_t Init_colis(int i, int j, Colis_t colis){
     return colis;
 }
 
+int totalColis(int nb){
+    return vaisseau.NBColis + nb;
+}
+
 Slot_t initAllColis(int i){
     vaisseau.slot[i].NBColisSlot = 0;
     int j;
@@ -20,16 +24,18 @@ Slot_t initAllColis(int i){
             vaisseau.slot[i].colis[j] = Init_colis(i, j, vaisseau.slot[i].colis[j]);
             vaisseau.slot[i].NBColisSlot++;
         }
+        vaisseau.NBColis = totalColis(vaisseau.slot[i].NBColisSlot);
     return vaisseau.slot[i];
 }
 
+/*Fonction qui tri les colis*/
 Slot_t triColis(Slot_t slot){
-    /*Tri par priorite*/
-    Colis_t tmp;
+    Colis_t tmp; //variable temporaire
     int i, j;
     int l = 0;
     int k = NB_COLIS;
 
+    /*Tri par priorite*/
     for(i =0 ; i<k; ++i){
         for(j = i+1; j<k; ++j){
             //printf("j = %d\n", j);
@@ -70,24 +76,14 @@ Slot_t triColis(Slot_t slot){
 void* fonction_vaisseau(void* arg){
     //int i = (int) arg;
     //int j;
-    pthread_mutex_lock(&vaisseau.mVaisseau);
-    /*vaisseau.slot[i].NBColisSlot = 0;
-    vaisseau.Status = 0;
-    if(vaisseau.Status == 0){
-        for(j = 1; j<=NB_COLIS; ++j){
-            if(i!=NB_SLOT){
-                vaisseau.slot[i].colis[j] = Init_colis(i, j, vaisseau.slot[i].colis[j]);
-                vaisseau.slot[i].NBColisSlot++;
-            }else if(i==NB_SLOT){
-                vaisseau.Status = 1;
-                //printf("Vaisseau en l'air\n");
-            }
-        }
-        vaisseau.slot[i] = triColis(vaisseau.slot[i]);
-    }else if(vaisseau.Status == 1){
-
-    }*/
-    pthread_mutex_unlock(&vaisseau.mVaisseau);
+    while(1){
+        pthread_mutex_lock(&mVaisseau);
+        pthread_cond_wait(&cVaisseau, &mVaisseau);
+        printf("REMPLISSAGE COLIS\n");
+        vaisseau.NBColis = (NB_SLOT-1) * NB_COLIS;
+        pthread_cond_signal(&cDrone);
+        pthread_mutex_unlock(&mVaisseau);
+    }
     pthread_exit(NULL);
 }
 
