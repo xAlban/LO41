@@ -37,16 +37,16 @@ void prendreColis(Drone_t *drone, Colis_t Colis){
     pthread_mutex_unlock(&mColis);
 }
 
-void descendDrone(Drone_t *drone, int id){
+void descendDrone(Drone_t *drone){
     pthread_mutex_lock(&drone->mDrone);
     Sleep(2000);
-    pthread_cond_signal(&client[id].cClient);
+    pthread_cond_signal(&client[drone->colis.ID_client].cClient);
     pthread_mutex_unlock(&drone->mDrone);
 }
 
-void monterDrone(Drone_t *drone, int id){
+void monterDrone(Drone_t *drone){
     pthread_mutex_lock(&drone->mDrone);
-    pthread_cond_wait(&drone->cDrone, &client[id].mClient);
+    pthread_cond_wait(&drone->cDrone, &client[drone->colis.ID_client].mClient);
     Sleep(2000);
     drone->status = 4;
     pthread_mutex_unlock(&drone->mDrone);
@@ -72,19 +72,19 @@ void DecrementerTotalColis(int idDrone){
     vaisseau.slot[idDrone].NBColisSlot--;
 }
 
-void donneColis(Drone_t *drone, int id){
+void donneColis(Drone_t *drone){
     if(client[drone->colis.ID_client].etat==1){
-        descendDrone(drone, id);
-        monterDrone(drone, id);
+        descendDrone(drone);
+        monterDrone(drone);
     }
     rentrerDrone(drone);
 }
 
-void livrerColis(Drone_t *drone, int id){
+void livrerColis(Drone_t *drone){
     pthread_mutex_lock(&mColis);
     vaisseau.NBDroneTravail++;
     Sleep(10*(drone->colis.temps/2));
-    donneColis(drone, id);
+    donneColis(drone);
     pthread_mutex_unlock(&mColis);
 }
 
@@ -109,7 +109,7 @@ void* fonction_drone(void* arg){
                 i++;
             }
             DecrementerTotalColis(idDrone);
-            livrerColis(drone, idDrone);
+            livrerColis(drone);
         }
         pthread_mutex_unlock(&drone->mDrone);
     }
