@@ -31,7 +31,7 @@ void* fonction_client(void* arg){
     Client_t *client = (Client_t*) arg;
     int idClient = pthread_self() - 1;
     while(client->NBColisAttente >0){
-        printf("Thread client %d\n", idClient);
+        //printf("Thread client %d\n", idClient);
         //ClientprendreColis(&client)
     }
 
