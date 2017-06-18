@@ -10,7 +10,7 @@ Colis_t Init_colis(int i, int j, Colis_t colis){
     colis.temps = get_random(AUTONOMIE,1);
     colis.zone = client[colis.ID_client].zone;
     colis.etat = get_random(2,1);
-    client[colis.ID_client].NBColis++;
+    client[colis.ID_client].NBColisAttente++;
     printf("Colis pour client %d a pour priorite %d, pour un temps maxi %d min, et pese %d a pour destination %d, et l'etat du colis est %d\n", colis.ID_client, colis.priorite, colis.temps, colis.poids, colis.zone, colis.etat);
     return colis;
 }
@@ -74,12 +74,12 @@ Slot_t triColis(Slot_t slot){
 void* fonction_vaisseau(void* arg){
     Vaisseau_t *vaisseau = (Vaisseau_t*) arg;
     while(vaisseau->NBColis > 0){
-        pthread_mutex_lock(&mVaisseau);
-        pthread_cond_wait(&cVaisseau, &mVaisseau);
+        pthread_mutex_lock(&vaisseau->mVaisseau);
+        /*pthread_cond_wait(&cVaisseau, &mVaisseau);
         printf("REMPLISSAGE COLIS\n");
         vaisseau->NBColis = (NB_SLOT-1) * NB_COLIS;
-        pthread_cond_signal(&cDrone);
-        pthread_mutex_unlock(&mVaisseau);
+        pthread_cond_signal(&cDrone);*/
+        pthread_mutex_unlock(&vaisseau->mVaisseau);
     }
     pthread_exit(NULL);
 }
