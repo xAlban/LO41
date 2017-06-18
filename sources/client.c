@@ -1,4 +1,4 @@
-#include "client.h"
+#include "../headers/client.h"
 
 /*Fonction qui initialise les clients*/
 Client_t initClient(int i, Client_t client){
