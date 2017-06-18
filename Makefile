@@ -10,14 +10,19 @@ CFLAGS = -Wall -ansi -pedantic ${C_STANDARD}
 LDFLAGS = -lpthread
 FILES = ${SOURCES_DIR}/*.c
 
+.PHONY: all clean
+
 all : ${FILENAME}
+	@echo "Building ..."
 
 ${FILENAME}: ${FILES}
 	${CC} ${CFLAGS} -o $@ $^ -I${INCLUDE_DIR} ${LDFLAGS}
 
 clean:
+	@echo "cleaning up ..."
 	${RM} *.o ${FILENAME}
 
 run: ${FILENAME}
+	@echo "Running application ..."
 	./${FILENAME} ${arg}
 

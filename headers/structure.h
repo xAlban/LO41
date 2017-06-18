@@ -15,6 +15,13 @@
 #define TRUE 1
 #define FALSE 0
 
+#if defined (Win32)
+#  include <windows.h>
+#  define psleep(sec) Sleep ((sec) * 1000)
+#elif defined (Linux)
+#  include <unistd.h>
+#  define psleep(sec) sleep ((sec))
+#endif
 
 typedef struct Client{
     int ID;

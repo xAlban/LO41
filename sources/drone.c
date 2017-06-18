@@ -17,7 +17,7 @@ void recharger(Drone_t *drone){
     //pthread_cond_wait(&cDrone, &mDrone);
     if(drone->autonomie == 0){
         drone->zone = 0;
-        Sleep(10*AUTONOMIE);
+        psleep(10*AUTONOMIE);
         drone->status = 0;
     }
     pthread_mutex_unlock(&drone->mDrone);
@@ -39,7 +39,7 @@ void prendreColis(Drone_t *drone, Colis_t Colis){
 
 void descendDrone(Drone_t *drone){
     pthread_mutex_lock(&drone->mDrone);
-    Sleep(2000);
+    psleep(2000);
     pthread_cond_signal(&client[drone->colis.ID_client].cClient);
     pthread_mutex_unlock(&drone->mDrone);
 }
@@ -47,7 +47,7 @@ void descendDrone(Drone_t *drone){
 void monterDrone(Drone_t *drone){
     pthread_mutex_lock(&drone->mDrone);
     pthread_cond_wait(&drone->cDrone, &client[drone->colis.ID_client].mClient);
-    Sleep(2000);
+    psleep(2000);
     drone->status = 4;
     pthread_mutex_unlock(&drone->mDrone);
 }
@@ -83,7 +83,7 @@ void donneColis(Drone_t *drone){
 void livrerColis(Drone_t *drone){
     pthread_mutex_lock(&mColis);
     vaisseau.NBDroneTravail++;
-    Sleep(10*(drone->colis.temps/2));
+    psleep(10*(drone->colis.temps/2));
     donneColis(drone);
     pthread_mutex_unlock(&mColis);
 }
