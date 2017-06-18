@@ -104,10 +104,12 @@ void initAll(){
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_mutex_init(&client[i].mClient, NULL);
         pthread_cond_init(&client[i].cClient, NULL);
+
     }
 
     for(j = 0; j<NB_DRONE; ++j){
         pthread_mutex_init(&drone[j].mDrone, NULL);
+
         pthread_cond_init(&drone[j].cDrone, NULL);
     }
 
@@ -118,8 +120,13 @@ void initAll(){
             }
     }
 
+<<<<<<< HEAD
     pthread_mutex_init(&vaisseau.mVaisseau, NULL);
+=======
+
+>>>>>>> origin/master
     pthread_cond_init(&vaisseau.cVaisseau, NULL);
+
 
     printf("\n\n");
 }
