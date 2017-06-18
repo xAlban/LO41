@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <time.h>
 #include <pthread.h>
-#include "structure.h"
-#include "drone.h"
-#include "vaisseau.h"
-#include "client.h"
+#include "../headers/structure.h"
+#include "../headers/drone.h"
+#include "../headers/vaisseau.h"
+#include "../headers/client.h"
 
 void initAll();
 void DestroyAll();
@@ -102,18 +102,21 @@ void initAll(){
     printf("Initialisation des mutex\n");
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_mutex_init(&client[i].mClient, NULL);
-        client[i].cClient = PTHREAD_COND_INITIALIZER;
+        pthread_cond_init(&client[i].cClient, NULL);
+        //client[i].cClient = PTHREAD_COND_INITIALIZER;
     }
     for(j = 0; j<NB_DRONE; ++j){
         pthread_mutex_init(&drone[j].mDrone, NULL);
-        drone[j].cDrone = PTHREAD_COND_INITIALIZER;
+        //drone[j].cDrone = PTHREAD_COND_INITIALIZER;
+        pthread_cond_init(&drone[j].cDrone, NULL);
     }
 
     pthread_mutex_init(&vaisseau.mVaisseau, NULL);
     pthread_mutex_init(&mColis, NULL);
-
-    vaisseau.cVaisseau = PTHREAD_COND_INITIALIZER;
-    cColis = PTHREAD_COND_INITIALIZER;
+    pthread_cond_init(&vaisseau.cVaisseau, NULL);
+    pthread_cond_init(&cColis, NULL);
+    ///vaisseau.cVaisseau = PTHREAD_COND_INITIALIZER;
+    //cColis = PTHREAD_COND_INITIALIZER;
 
     printf("\n\n");
 }
