@@ -10,6 +10,7 @@ Colis_t Init_colis(int i, int j, Colis_t colis){
     colis.temps = get_random(AUTONOMIE,1);
     colis.zone = client[colis.ID_client].zone;
     colis.etat = get_random(2,1);
+    client[colis.ID_client].colis[client[colis.ID_client].NBColisAttente] = colis;
     client[colis.ID_client].NBColisAttente++;
     printf("Colis pour client %d a pour priorite %d, pour un temps maxi %d min, et pese %d a pour destination %d, et l'etat du colis est %d\n", colis.ID_client, colis.priorite, colis.temps, colis.poids, colis.zone, colis.etat);
     return colis;

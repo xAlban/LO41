@@ -22,6 +22,7 @@ void ClientprendreColis(Client_t *client, Drone_t drone){
         drone.status = 3;
     }else{
         printf("Client %d refuse le colis car mauvais etat\n", drone.colis.ID_client);
+        drone.autonomie = drone.autonomie - drone.colis.temps;
     }
     pthread_cond_signal(&drone.cDrone);
     pthread_mutex_unlock(&client->mClient);
@@ -30,9 +31,10 @@ void ClientprendreColis(Client_t *client, Drone_t drone){
 void* fonction_client(void* arg){
     Client_t *client = (Client_t*) arg;
     int idClient = pthread_self() - 1;
+
     while(client->NBColisAttente >0){
         //printf("Thread client %d\n", idClient);
-        //ClientprendreColis(&client)
+        //ClientprendreColis(client,);
     }
 
     pthread_exit(NULL);

@@ -15,25 +15,6 @@
 #define TRUE 1
 #define FALSE 0
 
-#if defined (Win32)
-#  include <windows.h>
-#  define psleep(sec) Sleep ((sec) * 1000)
-#elif defined (Linux)
-#  include <unistd.h>
-#  define psleep(sec) sleep ((sec))
-#endif
-
-typedef struct Client{
-    int ID;
-    int zone;
-    int NBColisAttente;
-    int NBColisRecu;
-    int etat; // 1 pour il est la, 2 pour absent
-    pthread_mutex_t mClient;
-    pthread_cond_t cClient;
-
-}Client_t;
-
 typedef struct Colis{
     int ID_client;
     int priorite;
@@ -41,9 +22,21 @@ typedef struct Colis{
     int zone;
     int poids; //poids du colis
     int etat; //1 pour colis correct, 2 colis mauvais
-    //pthread_mutex_t mColis;
-    //pthread_cond_t cColis;
+    pthread_mutex_t mColis;
+    pthread_cond_t cColis;
 }Colis_t;
+
+typedef struct Client{
+    int ID;
+    int zone;
+    int NBColisAttente;
+    int NBColisRecu;
+    int etat; // 1 pour il est la, 2 pour absent
+    Colis_t colis[NBColisMax];
+    pthread_mutex_t mClient;
+    pthread_cond_t cClient;
+
+}Client_t;
 
 typedef struct Drone{
     int ID_drone;
@@ -76,12 +69,10 @@ typedef struct Vaisseau{
     pthread_cond_t cVaisseau;
 }Vaisseau_t;
 
-pthread_t t_drone[NB_DRONE], t_vaisseau, t_client[NB_CLIENT];
-pthread_mutex_t mColis;
-pthread_cond_t cColis;
-
 Vaisseau_t vaisseau;
 Client_t client[NB_CLIENT];
 Drone_t drone[NB_DRONE];
+
+pthread_t t_drone[NB_DRONE], t_vaisseau, t_client[NB_CLIENT];
 
 #endif // STRUCTURE_H_INCLUDED

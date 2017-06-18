@@ -100,38 +100,53 @@ void initAll(){
     printf("\n\n");
 
     printf("Initialisation des mutex\n");
+
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_mutex_init(&client[i].mClient, NULL);
         pthread_cond_init(&client[i].cClient, NULL);
     }
+
     for(j = 0; j<NB_DRONE; ++j){
         pthread_mutex_init(&drone[j].mDrone, NULL);
         pthread_cond_init(&drone[j].cDrone, NULL);
     }
 
-    pthread_mutex_init(&vaisseau.mVaisseau, NULL);
-    pthread_mutex_init(&mColis, NULL);
+    for(j = 0; j<NB_SLOT-1; ++j){
+            for(i = 0; i<client[j].NBColisAttente; ++i){
+                pthread_mutex_init(&client[j].colis[i].mColis, NULL);
+                pthread_cond_init(&client[j].colis[i].cColis, NULL);
+            }
+    }
 
+    pthread_mutex_init(&vaisseau.mVaisseau, NULL);
     pthread_cond_init(&vaisseau.cVaisseau, NULL);
-    pthread_cond_init(&cColis, NULL);
 
     printf("\n\n");
 }
 
 void DestroyAll(){
     int i;
+    int j;
     printf("Destroy All Mutex And Condition\n");
+
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_mutex_destroy(&client[i].mClient);
         pthread_cond_destroy(&client[i].cClient);
     }
+
     for(i = 0; i<NB_DRONE; ++i){
         pthread_mutex_destroy(&drone[i].mDrone);
         pthread_cond_destroy(&drone[i].cDrone);
     }
+
+    for(j = 0; j<NB_SLOT-1; ++j){
+            for(i = 0; i<client[j].NBColisAttente; ++i){
+                pthread_mutex_destroy(&client[j].colis[i].mColis);
+                pthread_cond_destroy(&client[j].colis[i].cColis);
+            }
+    }
+
     pthread_mutex_destroy(&vaisseau.mVaisseau);
     pthread_cond_destroy(&vaisseau.cVaisseau);
-    pthread_mutex_destroy(&mColis);
-    pthread_cond_destroy(&cColis);
 }
 
