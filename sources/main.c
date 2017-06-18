@@ -103,17 +103,21 @@ void initAll(){
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_mutex_init(&client[i].mClient, NULL);
         pthread_cond_init(&client[i].cClient, NULL);
+
     }
     for(j = 0; j<NB_DRONE; ++j){
         pthread_mutex_init(&drone[j].mDrone, NULL);
+
         pthread_cond_init(&drone[j].cDrone, NULL);
     }
 
     pthread_mutex_init(&vaisseau.mVaisseau, NULL);
     pthread_mutex_init(&mColis, NULL);
 
+
     pthread_cond_init(&vaisseau.cVaisseau, NULL);
     pthread_cond_init(&cColis, NULL);
+
 
     printf("\n\n");
 }
