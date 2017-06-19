@@ -40,6 +40,7 @@ void prendreColis(Drone_t *drone, Colis_t Colis){
             drone->colis = Colis;
             drone->status = 1;
             drone->zone = drone->colis.zone;
+            drone->colis.etatLivraison = 1;
         }else{
             recharger(drone);
         }
@@ -51,17 +52,18 @@ void descendDrone(Drone_t *drone){
     pthread_mutex_lock(&drone->mDrone);
     int i = 0;
     printf("Drone %d est arrive a destination, je descends\n", drone->ID_drone);
-    while(client[drone->colis.ID_client].colis[i]!=drone->colis){
+    /*while(client[drone->colis.ID_client].colis[i]!=drone->colis){
         i++;
-    }
+    }*/
     //psleep(2000);
+    drone->colis.etatLivraison = 2;
     pthread_cond_signal(&client[drone->colis.ID_client].cClient);
-    pthread_cond_wait(&client[drone->colis.ID_client].colis[i].cColis, &client[drone->colis.ID_client].colis[i].mColis);
     pthread_mutex_unlock(&drone->mDrone);
 }
 
 void monterDrone(Drone_t *drone){
     pthread_mutex_lock(&drone->mDrone);
+    pthread_cond_wait(&client[drone->colis.ID_client].cClient, &client[drone->colis.ID_client].mClient);
     printf("Le client %d a pris son colis, le drone %d remonte\n", drone->colis.ID_client, drone->ID_drone);
     //psleep(2000);
     drone->status = 4;
@@ -116,6 +118,7 @@ void* fonction_drone(void* arg){
     int i = 0; // pointer sur le colis du slot
     while(vaisseau.slot[idDrone].NBColisSlot>0){
         pthread_mutex_lock(&drone->mDrone);
+        pthread_cond_wait(&vaisseau.cVaisseau, &vaisseau.mVaisseau);
         /*if(vaisseau.NBColis==0){
             pthread_cond_signal(&cVaisseau);
             pthread_cond_wait(&cDrone, &mVaisseau);

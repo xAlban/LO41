@@ -99,6 +99,8 @@ void initAll(){
     }
     printf("\n\n");
 
+    printf("Chargement des colis dans les slots\n\n");
+
     printf("Initialisation des mutex\n");
 
     for(i = 0; i<NB_CLIENT; ++i){

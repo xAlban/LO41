@@ -12,23 +12,37 @@ Client_t initClient(int i, Client_t client){
 }
 
 void ClientprendreColis(Client_t *client){
+    int k = client->NBColisAttente;
+    int i,j,l,m;
+    BOOL boolean = FALSE;
     pthread_mutex_lock(&client->mClient);
-    pthread_cond_wait(&client->colis, );
-    if(drone.colis.etat==1){
-        printf("Client %d a pris son colis\n", drone.colis.ID_client);
+    pthread_cond_wait(&client->cClient, &client->mClient);
+    while(boolean){
+        for(i = 0; i<k; ++i){
+            for(j = 0; j<NB_DRONE; ++j){
+                if(client->ID==drone[j].colis.ID_client && client->colis[i].poids == drone[j].colis.poids){
+                    if(drone[j].colis.etatLivraison == 2){
+                        l = j;
+                        m = i;
+                        break;
+                        boolean = TRUE;
+                    }
+                }
+            }
+        }
+    }
+    if(drone[l].colis.etat==1){
+        printf("Client %d a pris son colis\n", drone[l].colis.ID_client);
         client->NBColisAttente--;
         client->NBColisRecu++;
-        drone.autonomie = drone.autonomie - drone.colis.temps;
-        drone.status = 3;
+        client->colis[m].etatLivraison = 4;
     }else{
-        printf("Client %d refuse le colis car mauvais etat\n", drone.colis.ID_client);
-        drone.autonomie = drone.autonomie - drone.colis.temps;
+        printf("Client %d refuse le colis car mauvais etat\n", drone[l].colis.ID_client);
     }
-    int i = 0;
-    while(client.colis[i]!=drone->colis){
-        i++;
-    }
-    pthread_cond_signal(&client->colis[i].cColis);
+    drone[l].status = 3;
+    drone[l].colis.etatLivraison = 3;
+    drone[l].autonomie = drone[l].autonomie - (drone[l].colis.temps/2);
+    pthread_cond_signal(&client->cClient);
     pthread_mutex_unlock(&client->mClient);
 }
 
@@ -40,6 +54,6 @@ void* fonction_client(void* arg){
         //printf("Thread client %d\n", idClient);
         ClientprendreColis(client);
     }
-
+    printf("Client %d, n'a plus de colis en attente ! \n", client->ID);
     pthread_exit(NULL);
 }

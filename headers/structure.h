@@ -22,6 +22,7 @@ typedef struct Colis{
     int zone;
     int poids; //poids du colis
     int etat; //1 pour colis correct, 2 colis mauvais
+    int etatLivraison; // 0 au slot, 1 sur le drone, 2 en attente, 3 livrer, 4 chez le client
     pthread_mutex_t mColis;
     pthread_cond_t cColis;
 }Colis_t;
