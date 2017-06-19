@@ -6,14 +6,15 @@
 Colis_t Init_colis(int i, int j, Colis_t colis){
     colis.ID_client = get_random(NB_CLIENT,0);
     colis.priorite =  get_random(3,1);
-    colis.poids = get_random(drone[j].charge,1);
+    //colis.poids = get_random(drone[j].charge,1);
+    colis.poids = get_random(CHARGEMAXI,1);
     colis.temps = get_random(AUTONOMIE,1);
     colis.zone = client[colis.ID_client].zone;
     colis.etat = get_random(2,1);
     colis.etatLivraison = 0;
     client[colis.ID_client].colis[client[colis.ID_client].NBColisAttente] = colis;
     client[colis.ID_client].NBColisAttente++;
-    printf("Colis pour client %d a pour priorite %d, pour un temps maxi %d min, et pese %d a pour destination %d, et l'etat du colis est %d\n", colis.ID_client, colis.priorite, colis.temps, colis.poids, colis.zone, colis.etat);
+    printf("Colis pour client %d a pour priorite %d, pour un temps maxi %d min, \n et pese %d kg a pour destination %d, et l'etat du colis est %d\n", colis.ID_client, colis.priorite, colis.temps, colis.poids, colis.zone, colis.etat);
     return colis;
 }
 
@@ -21,15 +22,15 @@ int totalColis(int nb){
     return vaisseau.NBColis + nb;
 }
 
-Slot_t initAllColis(int i){
-    vaisseau.slot[i].NBColisSlot = 0;
+Slot_t initAllColis(Vaisseau_t *vaisseau, int i){
+    vaisseau->slot[i].NBColisSlot = 0;
     int j;
         for(j = 0; j<NB_COLIS; ++j){
-            vaisseau.slot[i].colis[j] = Init_colis(i, j, vaisseau.slot[i].colis[j]);
-            vaisseau.slot[i].NBColisSlot++;
+            vaisseau->slot[i].colis[j] = Init_colis(i, j, vaisseau->slot[i].colis[j]);
+            vaisseau->slot[i].NBColisSlot++;
         }
-        vaisseau.NBColis = totalColis(vaisseau.slot[i].NBColisSlot);
-    return vaisseau.slot[i];
+        vaisseau->NBColis = totalColis(vaisseau->slot[i].NBColisSlot);
+    return vaisseau->slot[i];
 }
 
 /*Fonction qui tri les colis*/
@@ -77,13 +78,13 @@ void* fonction_vaisseau(void* arg){
     Vaisseau_t *vaisseau = (Vaisseau_t*) arg;
     printf("Decollage du vaisseau mere\n");
     vaisseau->Status = 1;
-    int i = 0;
+    //int i = 0;
     printf("Vaisseau mere en l'air, commencement des livraisons\n");
     while(vaisseau->NBColis > 0 && vaisseau->Status == 1){
         pthread_mutex_lock(&vaisseau->mVaisseau);
-        for(i = 0; i<NB_DRONE; ++i){
-            pthread_cond_signal(&drone[i].cDrone);
-        }
+        //for(i = 0; i<NB_DRONE; ++i){
+            //pthread_cond_signal(&cDrone);
+        //}
         /*printf("REMPLISSAGE COLIS\n");
         vaisseau->NBColis = (NB_SLOT-1) * NB_COLIS;*/
         pthread_cond_wait(&vaisseau->cVaisseau, &vaisseau->mVaisseau);
