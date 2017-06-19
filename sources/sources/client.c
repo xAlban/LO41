@@ -12,12 +12,12 @@ Client_t initClient(int i, Client_t client){
 }
 
 void ClientprendreColis(Client_t *client){
-    //int k = client->NBColisAttente;
-    //int i,j,l,m;
-    //BOOL boolean = FALSE;
+    int k = client->NBColisAttente;
+    int i,j,l,m;
+    BOOL boolean = FALSE;
     pthread_mutex_lock(&client->mClient);
     pthread_cond_wait(&client->cClient, &client->mClient);
-    /*while(boolean){
+    while(boolean){
         for(i = 0; i<k; ++i){
             for(j = 0; j<NB_DRONE; ++j){
                 if(client->ID==drone[j].colis.ID_client && client->colis[i].poids == drone[j].colis.poids){
@@ -38,10 +38,10 @@ void ClientprendreColis(Client_t *client){
         client->colis[m].etatLivraison = 4;
     }else{
         printf("Client %d refuse le colis car mauvais etat\n", drone[l].colis.ID_client);
-    }*/
-    /*drone[l].status = 3;
+    }
+    drone[l].status = 3;
     drone[l].colis.etatLivraison = 3;
-    drone[l].autonomie = drone[l].autonomie - (drone[l].colis.temps/2);*/
+    drone[l].autonomie = drone[l].autonomie - (drone[l].colis.temps/2);
     pthread_cond_signal(&client->cClient);
     pthread_mutex_unlock(&client->mClient);
 }
@@ -49,15 +49,11 @@ void ClientprendreColis(Client_t *client){
 void* fonction_client(void* arg){
     Client_t *client = (Client_t*) arg;
     //int idClient = pthread_self() - 1;
-    //printf("Thread client %d\n", idClient);
-    if(client->NBColisAttente==0){
-        printf("Le client %d ne recoit pas ces colis car aucun des colis lui appartient!\n", client->ID);
-    }else{
-        while(client->NBColisAttente >0){
-            ClientprendreColis(client);
-        }
-        printf("Client %d, n'a plus de colis en attente ! \n", client->ID);
-    }
 
+    while(client->NBColisAttente >0){
+        //printf("Thread client %d\n", idClient);
+        ClientprendreColis(client);
+    }
+    printf("Client %d, n'a plus de colis en attente ! \n", client->ID);
     pthread_exit(NULL);
 }

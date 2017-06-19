@@ -12,8 +12,9 @@ FILES = ${SOURCES_DIR}/*.c
 
 .PHONY: clean
 
-all : ${FILENAME}
+all : 
 	@echo "Building ..."
+	${FILENAME}
 
 ${FILENAME}: ${FILES}
 	${CC} ${CFLAGS} -o $@ $^ -I${INCLUDE_DIR} ${LDFLAGS}

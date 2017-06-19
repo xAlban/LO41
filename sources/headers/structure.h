@@ -10,7 +10,6 @@
 #define NB_SLOT NB_DRONE+1 // nombre de slot et le dernier slot correspond au colis dommagee ou tromper
 #define ZONE 2
 #define NBColisMax NB_DRONE * NB_COLIS
-#define CHARGEMAXI 50
 
 #define BOOL int //boolean
 #define TRUE 1
@@ -48,6 +47,8 @@ typedef struct Drone{
     int autonomie;
     int zone; //0 pour dans le vaisseau, -1 pour perdu, et  les autre zones pour aller a destination
     Colis_t colis; // pour donner un colis au drone
+    pthread_mutex_t mDrone;
+    pthread_cond_t cDrone;
 }Drone_t;
 
 typedef struct Slot{

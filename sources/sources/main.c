@@ -17,15 +17,6 @@ int main(int argc, char* argv[]){
 
     initAll();
 
-    printf("Creation des threads client !\n");
-    for(i = 0; i<NB_CLIENT; ++i){
-        ret = pthread_create(&t_client[i], NULL, fonction_client, &client[i]);
-        if(ret){
-            exit(EXIT_FAILURE);
-        }
-    }
-    Sleep(2000);
-
     printf("Creation des threads drones !\n");
     for(i = 0; i<NB_DRONE; ++i){
         ret = pthread_create(&t_drone[i], NULL, fonction_drone, &drone[i]);
@@ -33,14 +24,20 @@ int main(int argc, char* argv[]){
             exit(EXIT_FAILURE);
         }
     }
-    Sleep(2000);
 
     printf("Creation d'un thread vaisseau !\n");
     ret = pthread_create(&t_vaisseau, NULL, fonction_vaisseau, &vaisseau);
     if(ret){
         exit(EXIT_FAILURE);
     }
-    Sleep(2000);
+
+    printf("Creation des threads client !\n");
+    for(i = 0; i<NB_CLIENT; ++i){
+        ret = pthread_create(&t_client[i], NULL, fonction_client, &client[i]);
+        if(ret){
+            exit(EXIT_FAILURE);
+        }
+    }
 
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_join(t_client[i], NULL);
@@ -83,12 +80,11 @@ void initAll(){
     printf("Initialisation des slots et des colis\n");
     for(k = 0; k<NB_SLOT-1; ++k){
         printf("Slot %d\n", k);
-        vaisseau.slot[k] = initAllColis(&vaisseau, k);
+        vaisseau.slot[k] = initAllColis(k);
     }
     vaisseau.slot[NB_SLOT].NBColisSlot = 0;
     vaisseau.slot[NB_SLOT].colis[NBColisMax];
     printf("\n\n");
-
 
     printf("Tri des colis\n");
     for(l = 0; l<NB_SLOT-1; ++l){
@@ -101,7 +97,6 @@ void initAll(){
     for(i = 0; i<NB_CLIENT; ++i){
         printf("Client %d attends %d colis\n", client[i].ID, client[i].NBColisAttente);
     }
-    printf("Nombre total de colis a livrer est de %d\n", vaisseau.NBColis);
     printf("\n\n");
 
     printf("Chargement des colis dans les slots\n\n");
@@ -113,6 +108,11 @@ void initAll(){
         pthread_cond_init(&client[i].cClient, NULL);
     }
 
+    for(j = 0; j<NB_DRONE; ++j){
+        pthread_mutex_init(&drone[j].mDrone, NULL);
+        pthread_cond_init(&drone[j].cDrone, NULL);
+    }
+
     for(j = 0; j<NB_SLOT-1; ++j){
             for(i = 0; i<client[j].NBColisAttente; ++i){
                 pthread_mutex_init(&client[j].colis[i].mColis, NULL);
@@ -122,6 +122,7 @@ void initAll(){
 
     pthread_mutex_init(&vaisseau.mVaisseau, NULL);
     pthread_cond_init(&vaisseau.cVaisseau, NULL);
+
     printf("\n\n");
 }
 
@@ -133,6 +134,11 @@ void DestroyAll(){
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_mutex_destroy(&client[i].mClient);
         pthread_cond_destroy(&client[i].cClient);
+    }
+
+    for(i = 0; i<NB_DRONE; ++i){
+        pthread_mutex_destroy(&drone[i].mDrone);
+        pthread_cond_destroy(&drone[i].cDrone);
     }
 
     for(j = 0; j<NB_SLOT-1; ++j){
