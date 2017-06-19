@@ -105,33 +105,34 @@ void livrerColis(Drone_t *drone){
 }
 
 void* fonction_drone(void* arg){
-    Drone_t drone;
-    //int idDrone = drone->ID_drone;
-    //int i = 0; // pointer sur le colis du slot
-    //while(vaisseau.slot[drone.ID_drone].NBColisSlot>0){
+    Drone_t *drone = (Drone_t*) arg;
+    int idDrone = drone->ID_drone;
+    printf("Drone thread %d creee\n", idDrone);
+    Sleep(2000);
+    int i = 0; // pointer sur le colis du slot
+    while(vaisseau.slot[drone->ID_drone].NBColisSlot>0){
 
-      //  pthread_cond_wait(&vaisseau.cVaisseau, &vaisseau.mVaisseau);
-        /*if(vaisseau.NBColis==0){
-            pthread_cond_signal(&cVaisseau);
-            pthread_cond_wait(&cDrone, &mVaisseau);
-        }*/
-        //printf("Thread Drone %d\n", idDrone);
+       pthread_cond_wait(&vaisseau.cVaisseau, &vaisseau.mVaisseau);
+        if(vaisseau.NBColis==0){
+            pthread_cond_signal(&vaisseau.cVaisseau);
+            pthread_cond_wait(&vaisseau.cVaisseau, &vaisseau.mVaisseau);
+        }
         /*vaisseau.NBColis--;
-        printf("Drone %d a pris un colis, la il reste %d colis\n", drone.ID_drone, vaisseau.NBColis);
-        if(drone.status == 0 && drone.zone == 0){
-            prendreColis(&drone, vaisseau.slot[drone.ID_drone].colis[i]);
+        printf("Drone %d a pris un colis, la il reste %d colis\n", drone.ID_drone, vaisseau.NBColis);*/
+        if(drone->status == 0 && drone->zone == 0){
+            prendreColis(drone, vaisseau.slot[idDrone].colis[i]);
             if(i==NB_COLIS){
                 i = 0;
             }else{
                 i++;
             }
-            DecrementerTotalColis(drone.ID_drone);
-            livrerColis(&drone);
-        }else if(drone.autonomie == 0 && drone.zone == 0){
-            recharger(&drone);
-        }else if(drone.status == -2){
+            DecrementerTotalColis(idDrone);
+            livrerColis(drone);
+        }else if(drone->autonomie == 0 && drone->zone == 0){
+            recharger(drone);
+        }else if(drone->status == -2){
             //mort du drone
         }
-    }*/
+    }
     pthread_exit(NULL);
 }
