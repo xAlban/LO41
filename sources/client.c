@@ -48,8 +48,9 @@ void ClientprendreColis(Client_t *client){
 
 void* fonction_client(void* arg){
     Client_t *client = (Client_t*) arg;
-    //int idClient = pthread_self() - 1;
-    //printf("Thread client %d\n", idClient);
+    int idClient = client->ID;
+    printf("Client thread %d creee\n", idClient);
+    Sleep(2000);
     if(client->NBColisAttente==0){
         printf("Le client %d ne recoit pas ces colis car aucun des colis lui appartient!\n", client->ID);
     }else{
