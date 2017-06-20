@@ -11,7 +11,7 @@
 Colis_t Init_colis(int i, int j, Colis_t colis){
     colis.ID_client = get_random(NB_CLIENT,0);
     colis.priorite =  get_random(3,1);
-    colis.poids = get_random(drone[j].charge,1);
+    colis.poids = get_random(drone[j].charge,5);
     //colis.poids = get_random(CHARGEMAXI,1);
     colis.temps = get_random(AUTONOMIE,1);
     colis.zone = client[colis.ID_client].zone;
@@ -88,6 +88,12 @@ void* fonction_vaisseau(void* arg){
     JAUNE("Decollage du vaisseau mere\n");
     vaisseau->Status = 1;
     JAUNE("Vaisseau mere en l'air, commencement des livraisons\n");
+
+    /*Reveille les drones*/
+    int i;
+    for(i = 0; i<NB_DRONE; ++i){
+        pthread_cond_signal(&drone[i].cDrone);
+    }
 
     /*Tant que le nbre total de colis est superieur a 0 et que le status du vaisseau est en l'air, on continue a livrer les colis*/
     while(vaisseau->NBColis > 0 && vaisseau->Status == 1){

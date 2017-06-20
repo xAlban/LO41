@@ -22,7 +22,7 @@ void* fonction_client(void* arg){
     Client_t *client = (Client_t*) arg;
     int idClient = client->ID;
     //Sleep(2000);
-    sleep(2000);
+    //sleep(2000);
     int k = client->NBColisAttente;
     int i,j,l,m;
     BOOL boolean = FALSE;
@@ -42,13 +42,13 @@ void* fonction_client(void* arg){
             printf("Client %d appelle\n", idClient);
 
             while(boolean){
-
+                printf("TEST\n");
                 for(i = 0; i<k; ++i){
-
+                    printf("TEST\n");
                     for(j = 0; j<NB_DRONE; ++j){
-
-                        if(client->ID==drone[j].colis.ID_client && client->colis[i].poids == drone[j].colis.poids && client->colis[j].temps == drone[j].colis.temps){
-
+                        printf("TEST\n");
+                        if(idClient == drone[j].colis.ID_client && client->colis[i].poids == drone[j].colis.poids && client->colis[j].temps == drone[j].colis.temps){
+                            printf("TEST\n");
                             if(drone[j].colis.etatLivraison == 2){
 
                                 l = j;
@@ -69,12 +69,12 @@ void* fonction_client(void* arg){
             boolean = FALSE;
 
             if(drone[l].colis.etat==1){
-                printf("Client %d a pris son colis\n", drone[l].colis.ID_client);
+                printf("Client %d a pris son colis\n", idClient);
                 client->NBColisAttente--;
                 client->NBColisRecu++;
                 client->colis[m].etatLivraison = 4;
             }else{
-                printf("Client %d refuse le colis car mauvais etat\n", drone[l].colis.ID_client);
+                printf("Client %d refuse le colis car mauvais etat\n", idClient);
             }
             drone[l].status = 3;
 

@@ -5,6 +5,7 @@
 #include "../headers/drone.h"
 #include "../headers/vaisseau.h"
 #include "../headers/client.h"
+#include "../headers/fonctions.h"
 
 void initAll();
 void DestroyAll();
@@ -25,7 +26,7 @@ int main(int argc, char* argv[]){
         }
     }
     //Sleep(2000);
-    sleep(2000);
+    //sleep(2000);
 
     VERT("Creation des threads drones !\n");
     for(i = 0; i<NB_DRONE; ++i){
@@ -36,7 +37,7 @@ int main(int argc, char* argv[]){
         }
     }
     //Sleep(2000);
-    sleep(2000);
+    //sleep(2000);
 
     JAUNE("Creation d'un thread vaisseau !\n");
     ret = pthread_create(&t_vaisseau, NULL, fonction_vaisseau, &vaisseau);
@@ -45,7 +46,7 @@ int main(int argc, char* argv[]){
         exit(EXIT_FAILURE);
     }
     //Sleep(2000);
-    sleep(2000);
+    //sleep(2000);
 
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_join(t_client[i], NULL);
@@ -118,11 +119,9 @@ void initAll(){
         pthread_cond_init(&client[i].cClient, NULL);
     }
 
-    for(j = 0; j<NB_SLOT-1; ++j){
-            for(i = 0; i<client[j].NBColisAttente; ++i){
-                pthread_mutex_init(&client[j].colis[i].mColis, NULL);
-                pthread_cond_init(&client[j].colis[i].cColis, NULL);
-            }
+    for(j = 0; j<NB_DRONE; ++j){
+        pthread_mutex_init(&drone[j].mDrone, NULL);
+        pthread_cond_init(&drone[j].cDrone, NULL);
     }
 
     pthread_mutex_init(&vaisseau.mVaisseau, NULL);
@@ -132,7 +131,6 @@ void initAll(){
 
 void DestroyAll(){
     int i;
-    int j;
     ROUGE("Destroy All Mutex And Condition\n");
 
     for(i = 0; i<NB_CLIENT; ++i){
@@ -140,11 +138,9 @@ void DestroyAll(){
         pthread_cond_destroy(&client[i].cClient);
     }
 
-    for(j = 0; j<NB_SLOT-1; ++j){
-            for(i = 0; i<client[j].NBColisAttente; ++i){
-                pthread_mutex_destroy(&client[j].colis[i].mColis);
-                pthread_cond_destroy(&client[j].colis[i].cColis);
-            }
+    for(i = 0; i<NB_DRONE; ++i){
+        pthread_mutex_destroy(&drone[i].mDrone);
+        pthread_cond_destroy(&drone[i].cDrone);
     }
 
     pthread_mutex_destroy(&vaisseau.mVaisseau);
