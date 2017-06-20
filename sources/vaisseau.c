@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 #include "../headers/structure.h"
 #include "../headers/fonctions.h"
 #include "../headers/vaisseau.h"
@@ -96,11 +97,19 @@ void* fonction_vaisseau(void* arg){
     }
 
     /*Tant que le nbre total de colis est superieur a 0 et que le status du vaisseau est en l'air, on continue a livrer les colis*/
-    while(vaisseau->NBColis > 0 && vaisseau->Status == 1){
+    while(vaisseau->NBColis != 0 && vaisseau->Status == 1){
+
         pthread_mutex_lock(&vaisseau->mVaisseau);
+
         pthread_cond_wait(&vaisseau->cVaisseau, &vaisseau->mVaisseau);
+
         JAUNE("NOTHING\n");
+        vaisseau->Status = 0;
+
         pthread_mutex_unlock(&vaisseau->mVaisseau);
     }
+
+    JAUNE("ATERRISAGE DU VAISSEAU MERE A L'ENTREPROT\n");
+
     pthread_exit(NULL);
 }

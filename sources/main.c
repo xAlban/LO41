@@ -1,11 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 #include "../headers/structure.h"
 #include "../headers/drone.h"
 #include "../headers/vaisseau.h"
 #include "../headers/client.h"
 #include "../headers/fonctions.h"
+
 
 void initAll();
 void DestroyAll();
@@ -26,7 +28,7 @@ int main(int argc, char* argv[]){
         }
     }
     //Sleep(2000);
-    //sleep(2000);
+    sleep(2000);
 
     VERT("Creation des threads drones !\n");
     for(i = 0; i<NB_DRONE; ++i){
@@ -37,7 +39,7 @@ int main(int argc, char* argv[]){
         }
     }
     //Sleep(2000);
-    //sleep(2000);
+    sleep(2000);
 
     JAUNE("Creation d'un thread vaisseau !\n");
     ret = pthread_create(&t_vaisseau, NULL, fonction_vaisseau, &vaisseau);
@@ -46,7 +48,7 @@ int main(int argc, char* argv[]){
         exit(EXIT_FAILURE);
     }
     //Sleep(2000);
-    //sleep(2000);
+    sleep(2000);
 
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_join(t_client[i], NULL);

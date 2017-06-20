@@ -34,6 +34,7 @@ typedef struct Client{
     int NBColisAttente;
     int NBColisRecu;
     int etat; // 1 pour il est la, 2 pour absent
+    int retourColis;
     Colis_t colis[NBColisMax];
     int couloir[NB_COULOIR]; // couloir[0] aller, couloir[1] retour  (0 pour vide, 1 pour occupe)
     pthread_mutex_t mClient;
