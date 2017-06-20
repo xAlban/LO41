@@ -28,7 +28,8 @@ int main(int argc, char* argv[]){
         }
     }
     //Sleep(2000);
-    sleep(2000);
+    fflush(stdout);
+    sleep(2);
 
     VERT("Creation des threads drones !\n");
     for(i = 0; i<NB_DRONE; ++i){
@@ -39,7 +40,8 @@ int main(int argc, char* argv[]){
         }
     }
     //Sleep(2000);
-    sleep(2000);
+    fflush(stdout);
+    sleep(2);
 
     JAUNE("Creation d'un thread vaisseau !\n");
     ret = pthread_create(&t_vaisseau, NULL, fonction_vaisseau, &vaisseau);
@@ -48,7 +50,8 @@ int main(int argc, char* argv[]){
         exit(EXIT_FAILURE);
     }
     //Sleep(2000);
-    sleep(2000);
+    fflush(stdout);
+    sleep(2);
 
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_join(t_client[i], NULL);
