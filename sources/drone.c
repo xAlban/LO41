@@ -27,7 +27,11 @@ void DecrementerTotalColis(int idDrone){
 void* fonction_drone(void* arg){
 
     Drone_t *drone = (Drone_t*) arg;
-    //int idDrone = drone->ID_drone;
+
+    int idDrone = drone->ID_drone;
+
+    fflush(stdout);
+
     sleep(2);
     int i = 0; // pointer sur le colis du slot
     int idClient;
@@ -53,6 +57,10 @@ void* fonction_drone(void* arg){
                     VERT("Recharge du drone ");
                     printf("%s%d\n%s", GREEN, drone->ID_drone, INIT);
                     drone->status = -1;
+
+                    //Sleep(100*AUTONOMIE);
+                    fflush(stdout);
+
                     sleep(AUTONOMIE/10);
                     drone->autonomie = AUTONOMIE;
                     VERT("Fin du rechargement du drone ");
@@ -91,7 +99,11 @@ void* fonction_drone(void* arg){
             pthread_cond_signal(&client[idClient].cClient);
           
             vaisseau.NBDroneTravail++;
-            sleep(drone->colis.temps/2);
+
+            //Sleep(100*(drone->colis.temps/2));
+            fflush(stdout);
+            sleep((drone->colis.temps/2)/10);
+
             drone->autonomie = drone->autonomie - (drone->colis.temps/2);
             drone->zone = drone->colis.zone;
             printf("%sLe drone %d arrive a la zone %d\n%s", GREEN, drone->ID_drone, drone->zone, INIT);
@@ -141,7 +153,11 @@ void* fonction_drone(void* arg){
             pthread_cond_signal(&client[idClient].cClient);
 
             drone->status = 4;
-            sleep(drone->colis.temps/2);
+
+            //Sleep(100*(drone->colis.temps/2));
+            fflush(stdout);
+            sleep((drone->colis.temps/2)/10);
+
             printf("%sDrone %d arrive au vaisseau mere\n%s", GREEN, drone->ID_drone, INIT);
             drone->autonomie = drone->autonomie - (drone->colis.temps/2);
             vaisseau.NBDroneTravail--;
@@ -169,6 +185,10 @@ void* fonction_drone(void* arg){
         if(drone->autonomie == 0 && drone->zone == 0){
 
             printf("%sRecharge du drone %d\n%s", GREEN, drone->ID_drone, INIT);
+
+            //Sleep(100*AUTONOMIE);
+            fflush(stdout);
+
             sleep(AUTONOMIE/10);
             drone->autonomie = AUTONOMIE;
             printf("%sFin du rechargement du drone %d\n%s", GREEN, drone->ID_drone, INIT);

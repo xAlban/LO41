@@ -24,6 +24,9 @@ void* fonction_client(void* arg){
 
     Client_t *client = (Client_t*) arg;
     int idClient = client->ID;
+
+    fflush(stdout);
+
     sleep(2);
     int k = client->NBColisAttente;
     int i,j,l,m;
