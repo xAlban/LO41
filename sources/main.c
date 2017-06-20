@@ -18,7 +18,16 @@ int main(int argc, char* argv[]){
     srand(time(NULL));
 
     initAll();
-
+  
+    JAUNE("Creation d'un thread vaisseau !\n");
+    ret = pthread_create(&t_vaisseau, NULL, fonction_vaisseau, &vaisseau);
+    printf("Vaisseau thread creee\n");
+    if(ret){
+        exit(EXIT_FAILURE);
+    }
+    //Sleep(2000);
+    sleep(2);
+  
     BLEU("Creation des threads client !\n");
     for(i = 0; i<NB_CLIENT; ++i){
         ret = pthread_create(&t_client[i], NULL, fonction_client, &client[i]);
@@ -28,7 +37,9 @@ int main(int argc, char* argv[]){
         }
     }
     //Sleep(2000);
+
     fflush(stdout);
+
     sleep(2);
 
     VERT("Creation des threads drones !\n");
@@ -40,6 +51,7 @@ int main(int argc, char* argv[]){
         }
     }
     //Sleep(2000);
+
     fflush(stdout);
     sleep(2);
 
@@ -51,6 +63,7 @@ int main(int argc, char* argv[]){
     }
     //Sleep(2000);
     fflush(stdout);
+
     sleep(2);
 
     for(i = 0; i<NB_CLIENT; ++i){
@@ -74,13 +87,15 @@ void initAll(){
         client[i] = initClient(i, client[i]);
     }
     printf("\n\n");
+    sleep(2);
 
     VERT("Initialisation des drones\n");
     for(j = 0; j<NB_DRONE; ++j){
         drone[j] = Init_drone(j, drone[j]);
     }
     printf("\n\n");
-
+    sleep(2);
+  
     JAUNE("Initialisation du vaisseau mere\n");
     vaisseau.NBColis = 0;
     vaisseau.NBDroneAttente = NB_DRONE;
@@ -90,6 +105,7 @@ void initAll(){
     vaisseau.Status = 0;
     vaisseau.NBColisRetour = 0;
     printf("\n");
+    sleep(2);
 
     ROUGE("Initialisation des slots et des colis\n");
     for(k = 0; k<NB_SLOT-1; ++k){
@@ -99,6 +115,7 @@ void initAll(){
     vaisseau.slot[NB_SLOT].NBColisSlot = 0;
     //vaisseau.slot[NB_SLOT].colis[NBColisMax];
     printf("\n\n");
+    sleep(2);
 
 
     ROUGE("Tri des colis\n");
@@ -107,6 +124,7 @@ void initAll(){
         vaisseau.slot[l] = triColis(vaisseau.slot[l]);
     }
     printf("\n\n");
+    sleep(2);
 
     BLEU("Connaitre chaque client attends combien de colis\n");
     for(i = 0; i<NB_CLIENT; ++i){
@@ -114,10 +132,13 @@ void initAll(){
     }
     printf("Nombre total de colis a livrer est de %d\n", vaisseau.NBColis);
     printf("\n\n");
+    sleep(2);
 
     ROUGE("Chargement des colis dans les slots\n\n");
+    sleep(2);
 
     ROUGE("Initialisation des mutex\n");
+    sleep(2);
 
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_mutex_init(&client[i].mClient, NULL);

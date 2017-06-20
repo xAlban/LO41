@@ -87,9 +87,12 @@ void* fonction_vaisseau(void* arg){
 
     Vaisseau_t *vaisseau = (Vaisseau_t*) arg;
     JAUNE("Decollage du vaisseau mere\n");
+    sleep(2);
+  
     vaisseau->Status = 1;
     JAUNE("Vaisseau mere en l'air, commencement des livraisons\n");
-
+    sleep(2);
+  
     /*Reveille les drones*/
     int i;
     for(i = 0; i<NB_DRONE; ++i){
@@ -103,7 +106,8 @@ void* fonction_vaisseau(void* arg){
 
         pthread_cond_wait(&vaisseau->cVaisseau, &vaisseau->mVaisseau);
 
-        JAUNE("NOTHING\n");
+        JAUNE("PLUS DE COLIS A LIVRER\n");
+      
         vaisseau->Status = 0;
 
         pthread_mutex_unlock(&vaisseau->mVaisseau);
