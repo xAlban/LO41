@@ -3,12 +3,12 @@
 
 #include <pthread.h>
 
-#define NB_DRONE 2 //nombre de drone
-#define NB_COLIS 2 //nombre de colis
+#define NB_DRONE 5 //nombre de drone
+#define NB_COLIS 5 //nombre de colis
 #define AUTONOMIE 30 //capacite d'autonomie du drone
-#define NB_CLIENT 3
+#define NB_CLIENT 5
 #define NB_SLOT NB_DRONE+1 // nombre de slot et le dernier slot correspond au colis dommagee ou tromper
-#define ZONE 2
+#define ZONE 5
 #define NBColisMax NB_DRONE * NB_COLIS
 #define CHARGEMAXI 50
 
