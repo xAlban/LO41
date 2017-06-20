@@ -47,8 +47,9 @@ void descendDrone(Drone_t *drone){
     /*while(client[drone->colis.ID_client].colis[i]!=drone->colis){
         i++;
     }*/
-    //psleep(2000);
+    Sleep(2000);
     drone->colis.etatLivraison = 2;
+    drone->autonomie = drone->autonomie - (drone->colis.temps/2);
     pthread_cond_signal(&client[drone->colis.ID_client].cClient);
 
 }
@@ -66,6 +67,7 @@ void monterDrone(Drone_t *drone){
 
     printf("Drone %d arrive au vaisseau mere\n", drone->ID_drone);
     Sleep(10*(drone->colis.temps/2));
+    drone->autonomie = drone->autonomie - (drone->colis.temps/2);
     vaisseau.NBDroneTravail--;
     drone->zone = 0;
     if(drone->colis.etat==2){
@@ -110,12 +112,11 @@ void* fonction_drone(void* arg){
     printf("Drone thread %d creee\n", idDrone);
     Sleep(2000);
     int i = 0; // pointer sur le colis du slot
-    while(vaisseau.slot[drone->ID_drone].NBColisSlot>0){
-
-       pthread_cond_wait(&vaisseau.cVaisseau, &vaisseau.mVaisseau);
+    //pthread_cond_wait(&vaisseau.cVaisseau, &vaisseau.mVaisseau);
+    while(vaisseau.slot[idDrone].NBColisSlot>0){
+        drone->status = 0;
         if(vaisseau.NBColis==0){
             pthread_cond_signal(&vaisseau.cVaisseau);
-            pthread_cond_wait(&vaisseau.cVaisseau, &vaisseau.mVaisseau);
         }
         /*vaisseau.NBColis--;
         printf("Drone %d a pris un colis, la il reste %d colis\n", drone.ID_drone, vaisseau.NBColis);*/

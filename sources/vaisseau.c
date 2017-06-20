@@ -78,16 +78,11 @@ void* fonction_vaisseau(void* arg){
     Vaisseau_t *vaisseau = (Vaisseau_t*) arg;
     printf("Decollage du vaisseau mere\n");
     vaisseau->Status = 1;
-    //int i = 0;
     printf("Vaisseau mere en l'air, commencement des livraisons\n");
     while(vaisseau->NBColis > 0 && vaisseau->Status == 1){
         pthread_mutex_lock(&vaisseau->mVaisseau);
-        //for(i = 0; i<NB_DRONE; ++i){
-            //pthread_cond_signal(&cDrone);
-        //}
-        /*printf("REMPLISSAGE COLIS\n");
-        vaisseau->NBColis = (NB_SLOT-1) * NB_COLIS;*/
         pthread_cond_wait(&vaisseau->cVaisseau, &vaisseau->mVaisseau);
+        printf("nothing\n");
         pthread_mutex_unlock(&vaisseau->mVaisseau);
     }
     pthread_exit(NULL);

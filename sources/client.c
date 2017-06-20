@@ -12,12 +12,12 @@ Client_t initClient(int i, Client_t client){
 }
 
 void ClientprendreColis(Client_t *client){
-    //int k = client->NBColisAttente;
-    //int i,j,l,m;
-    //BOOL boolean = FALSE;
+    /*int k = client->NBColisAttente;
+    int i,j,l,m;
+    BOOL boolean = FALSE;
     pthread_mutex_lock(&client->mClient);
     pthread_cond_wait(&client->cClient, &client->mClient);
-    /*while(boolean){
+    while(boolean){
         for(i = 0; i<k; ++i){
             for(j = 0; j<NB_DRONE; ++j){
                 if(client->ID==drone[j].colis.ID_client && client->colis[i].poids == drone[j].colis.poids){
@@ -52,7 +52,7 @@ void* fonction_client(void* arg){
     printf("Client thread %d creee\n", idClient);
     Sleep(2000);
     if(client->NBColisAttente==0){
-        printf("Le client %d ne recoit pas ces colis car aucun des colis lui appartient!\n", client->ID);
+        printf("Le client %d n'a aucun colis en attente ! \n", client->ID);
     }else{
         while(client->NBColisAttente >0){
             ClientprendreColis(client);
