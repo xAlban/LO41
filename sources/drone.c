@@ -27,9 +27,8 @@ void DecrementerTotalColis(int idDrone){
 void* fonction_drone(void* arg){
 
     Drone_t *drone = (Drone_t*) arg;
-    int idDrone = drone->ID_drone;
-    //Sleep(2000);
-    sleep(2000);
+    //int idDrone = drone->ID_drone;
+    sleep(2);
     int i = 0; // pointer sur le colis du slot
     int idClient;
     //printf("drone %d, slot %d, status %d, charge %d, autonomie %d, zone %d, nbre colis %d\n", drone->ID_drone, drone->slot, drone->status, drone->charge, drone->autonomie, drone->zone, drone->NBColisLivre);
@@ -52,13 +51,12 @@ void* fonction_drone(void* arg){
                 if(drone->autonomie<vaisseau.slot[drone->slot].colis[i].temps){
 
                     VERT("Recharge du drone ");
-                    printf("%d\n", drone->ID_drone);
+                    printf("%s%d\n%s", GREEN, drone->ID_drone, INIT);
                     drone->status = -1;
-                    //Sleep(100*AUTONOMIE);
-                    sleep(100*AUTONOMIE);
+                    sleep(AUTONOMIE/10);
                     drone->autonomie = AUTONOMIE;
-                    printf("Fin du rechargement du drone ");
-                    printf("%d\n", drone->ID_drone);
+                    VERT("Fin du rechargement du drone ");
+                    printf("%s%d\n%s", GREEN, drone->ID_drone, INIT);
                     drone->status = 0;
 
                 }
@@ -82,7 +80,7 @@ void* fonction_drone(void* arg){
             if(client[idClient].couloir[0] == 1){
 
                 printf("%sCouloir utilise pour aller au client %d, j'attends\n%s", GREEN, idClient, INIT);
-                pthread_cond_wait(&drone->cDrone, &drone->mDrone);
+                pthread_cond_wait(&client[idClient].cClient, &client[idClient].mClient);
                 printf("%sCouloir libere pour aller au client %d\n%s", GREEN, idClient, INIT);
 
             }
@@ -90,10 +88,10 @@ void* fonction_drone(void* arg){
             /*J'emprunte le couloir pour aller a la zone*/
             printf("%sCouloir vide pour aller au client %d, j'y vais\n%s", GREEN, idClient, INIT);
             client[idClient].couloir[0] = 1;
-
+            pthread_cond_signal(&client[idClient].cClient);
+          
             vaisseau.NBDroneTravail++;
-            //Sleep(100*(drone->colis.temps/2));
-            sleep(100*(drone->colis.temps/2));
+            sleep(drone->colis.temps/2);
             drone->autonomie = drone->autonomie - (drone->colis.temps/2);
             drone->zone = drone->colis.zone;
             printf("%sLe drone %d arrive a la zone %d\n%s", GREEN, drone->ID_drone, drone->zone, INIT);
@@ -102,17 +100,16 @@ void* fonction_drone(void* arg){
             if(client[idClient].etat==1){
 
                 printf("%sLe client %d est chez lui, drone %d descends\n%s", GREEN, idClient, drone->ID_drone, INIT);
-                //Sleep(2000);
-                //sleep(2000);
+                sleep(2);
                 drone->colis.etatLivraison = 2;
-                drone->autonomie = drone->autonomie - (drone->colis.temps/2);
 
                 /*on envoie le signal au client pour lui dire qu'on est la*/
                 pthread_cond_signal(&client[idClient].cClient);
 
                 /*on attends le signal pour continuer*/
                 pthread_cond_wait(&client[idClient].cClient, &client[idClient].mClient);
-                printf("%sDrone %d, colis etat livraison %d\n%s", GREEN, drone->ID_drone, drone->colis.etatLivraison, INIT);
+              
+                //printf("%sDrone %d, colis etat livraison %d\n%s", GREEN, drone->ID_drone, drone->colis.etatLivraison, INIT);
 
             }else{
 
@@ -128,7 +125,7 @@ void* fonction_drone(void* arg){
             if(client[idClient].couloir[1] == 1){
 
                 printf("%sDrone %d attends que le couloir pour rentrer soit vide\n%s", GREEN, drone->ID_drone, INIT);
-                pthread_cond_wait(&drone->mDrone, &drone->mDrone);
+                pthread_cond_wait(&client[idClient].cClient, &client[idClient].mClient);
                 printf("%sCouloir libere pour rentrer au vaisseau Drone %d peut y aller\n%s", GREEN, drone->ID_drone, INIT);
 
             }
@@ -136,15 +133,15 @@ void* fonction_drone(void* arg){
             /*J'emprunte le couloir pour rentrer*/
             printf("%sDrone %d prend le couloir retour\n%s", GREEN, drone->ID_drone, INIT);
             client[idClient].couloir[1] = 1;
-
+            pthread_cond_signal(&client[idClient].cClient);
+          
             /*on libere le couloir apres avoir emprunte le couloir pour rentrer*/
             client[idClient].couloir[0] = 0;
             printf("%sDrone %d libere le couloir aller du client %d\n%s", GREEN, drone->ID_drone, drone->colis.ID_client, INIT);
-            pthread_cond_signal(&drone->cDrone);
+            pthread_cond_signal(&client[idClient].cClient);
 
             drone->status = 4;
-            //Sleep(100*(drone->colis.temps/2));
-            sleep(100*(drone->colis.temps/2));
+            sleep(drone->colis.temps/2);
             printf("%sDrone %d arrive au vaisseau mere\n%s", GREEN, drone->ID_drone, INIT);
             drone->autonomie = drone->autonomie - (drone->colis.temps/2);
             vaisseau.NBDroneTravail--;
@@ -152,9 +149,9 @@ void* fonction_drone(void* arg){
 
             /*On libere le couloir pour rentrer apres arriver au vaisseau*/
             client[idClient].couloir[1] = 0;
-            pthread_cond_signal(&drone->cDrone);
             printf("%sDrone %d libere le couloir 1 du client %d\n%s", GREEN, drone->ID_drone, drone->colis.ID_client, INIT);
-
+            pthread_cond_signal(&client[idClient].cClient);
+          
             /*On teste si le l'etat du colis est mauvais alors on le met dans le dernier slot du vaisseau*/
             if(drone->colis.etat==2){
 
@@ -172,8 +169,7 @@ void* fonction_drone(void* arg){
         if(drone->autonomie == 0 && drone->zone == 0){
 
             printf("%sRecharge du drone %d\n%s", GREEN, drone->ID_drone, INIT);
-            //Sleep(100*AUTONOMIE);
-            sleep(100*AUTONOMIE);
+            sleep(AUTONOMIE/10);
             drone->autonomie = AUTONOMIE;
             printf("%sFin du rechargement du drone %d\n%s", GREEN, drone->ID_drone, INIT);
             drone->status = 0;
