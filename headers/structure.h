@@ -2,6 +2,7 @@
 #define STRUCTURE_H_INCLUDED
 
 #include <pthread.h>
+#include <unistd.h>
 
 #define NB_DRONE 5 //nombre de drone
 #define NB_COLIS 5 //nombre de colis
@@ -11,6 +12,7 @@
 #define ZONE 5
 #define NBColisMax NB_DRONE * NB_COLIS
 #define CHARGEMAXI 50
+#define NB_COULOIR 2
 
 #define BOOL int //boolean
 #define TRUE 1
@@ -19,7 +21,7 @@
 typedef struct Colis{
     int ID_client;
     int priorite;
-    int temps; //temps necessaire pour arriver a destination
+    int temps; //temps/2 necessaire pour arriver a destination
     int zone;
     int poids; //poids du colis
     int etat; //1 pour colis correct, 2 colis mauvais
@@ -35,6 +37,7 @@ typedef struct Client{
     int NBColisRecu;
     int etat; // 1 pour il est la, 2 pour absent
     Colis_t colis[NBColisMax];
+    int couloir[NB_COULOIR]; // couloir[0] aller, couloir[1] retour  (0 pour vide, 1 pour occupe)
     pthread_mutex_t mClient;
     pthread_cond_t cClient;
 

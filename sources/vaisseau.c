@@ -1,3 +1,8 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+#include "../headers/structure.h"
+#include "../headers/fonctions.h"
 #include "../headers/vaisseau.h"
 
 
@@ -6,22 +11,24 @@
 Colis_t Init_colis(int i, int j, Colis_t colis){
     colis.ID_client = get_random(NB_CLIENT,0);
     colis.priorite =  get_random(3,1);
-    //colis.poids = get_random(drone[j].charge,1);
-    colis.poids = get_random(CHARGEMAXI,1);
+    colis.poids = get_random(drone[j].charge,1);
+    //colis.poids = get_random(CHARGEMAXI,1);
     colis.temps = get_random(AUTONOMIE,1);
     colis.zone = client[colis.ID_client].zone;
     colis.etat = get_random(2,1);
     colis.etatLivraison = 0;
     client[colis.ID_client].colis[client[colis.ID_client].NBColisAttente] = colis;
     client[colis.ID_client].NBColisAttente++;
-    printf("Colis pour client %d a pour priorite %d, pour un temps maxi %d min, \n et pese %d kg a pour destination %d, et l'etat du colis est %d\n", colis.ID_client, colis.priorite, colis.temps, colis.poids, colis.zone, colis.etat);
+    printf("Colis pour client %d a pour priorite %d, pour un temps maxi %d min, et pese %d kg a pour destination %d, et l'etat du colis est %d\n", colis.ID_client, colis.priorite, colis.temps, colis.poids, colis.zone, colis.etat);
     return colis;
 }
 
+/*Calcule du nbre total de colis dans le vaisseau*/
 int totalColis(int nb){
     return vaisseau.NBColis + nb;
 }
 
+/*Initialisation de tout les colis des slots*/
 Slot_t initAllColis(Vaisseau_t *vaisseau, int i){
     vaisseau->slot[i].NBColisSlot = 0;
     int j;
@@ -74,15 +81,19 @@ Slot_t triColis(Slot_t slot){
     return slot;
 }
 
+
 void* fonction_vaisseau(void* arg){
+
     Vaisseau_t *vaisseau = (Vaisseau_t*) arg;
-    printf("Decollage du vaisseau mere\n");
+    JAUNE("Decollage du vaisseau mere\n");
     vaisseau->Status = 1;
-    printf("Vaisseau mere en l'air, commencement des livraisons\n");
+    JAUNE("Vaisseau mere en l'air, commencement des livraisons\n");
+
+    /*Tant que le nbre total de colis est superieur a 0 et que le status du vaisseau est en l'air, on continue a livrer les colis*/
     while(vaisseau->NBColis > 0 && vaisseau->Status == 1){
         pthread_mutex_lock(&vaisseau->mVaisseau);
         pthread_cond_wait(&vaisseau->cVaisseau, &vaisseau->mVaisseau);
-        printf("nothing\n");
+        JAUNE("NOTHING\n");
         pthread_mutex_unlock(&vaisseau->mVaisseau);
     }
     pthread_exit(NULL);

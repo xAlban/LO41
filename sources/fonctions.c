@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
 #include "../headers/fonctions.h"
 
 /*Fonction qui retourne un nombre aleatoire entre 1 et max*/

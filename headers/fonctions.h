@@ -1,10 +1,6 @@
 #ifndef FONCTIONS_H_INCLUDED
 #define FONCTIONS_H_INCLUDED
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-
 #define RED "\x1B[1;31m"
 #define BLUE "\x1B[1;34m"
 #define GREEN "\x1B[1;32m"
