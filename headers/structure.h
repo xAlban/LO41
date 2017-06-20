@@ -2,15 +2,17 @@
 #define STRUCTURE_H_INCLUDED
 
 #include <pthread.h>
+#include <unistd.h>
 
 #define NB_DRONE 5 //nombre de drone
-#define NB_COLIS 5 //nombre de colis
+#define NB_COLIS 2 //nombre de colis
 #define AUTONOMIE 30 //capacite d'autonomie du drone
 #define NB_CLIENT 5
 #define NB_SLOT NB_DRONE+1 // nombre de slot et le dernier slot correspond au colis dommagee ou tromper
-#define ZONE 5
+#define ZONE 3
 #define NBColisMax NB_DRONE * NB_COLIS
 #define CHARGEMAXI 50
+#define NB_COULOIR 2
 
 #define BOOL int //boolean
 #define TRUE 1
@@ -19,13 +21,11 @@
 typedef struct Colis{
     int ID_client;
     int priorite;
-    int temps; //temps necessaire pour arriver a destination
+    int temps; //temps/2 necessaire pour arriver a destination
     int zone;
     int poids; //poids du colis
     int etat; //1 pour colis correct, 2 colis mauvais
     int etatLivraison; // 0 au slot, 1 sur le drone, 2 en attente, 3 livrer, 4 chez le client
-    pthread_mutex_t mColis;
-    pthread_cond_t cColis;
 }Colis_t;
 
 typedef struct Client{
@@ -34,7 +34,9 @@ typedef struct Client{
     int NBColisAttente;
     int NBColisRecu;
     int etat; // 1 pour il est la, 2 pour absent
+    int retourColis;
     Colis_t colis[NBColisMax];
+    int couloir[NB_COULOIR]; // couloir[0] aller, couloir[1] retour  (0 pour vide, 1 pour occupe)
     pthread_mutex_t mClient;
     pthread_cond_t cClient;
 
@@ -47,7 +49,10 @@ typedef struct Drone{
     int charge; // poids total qui peut transporte
     int autonomie;
     int zone; //0 pour dans le vaisseau, -1 pour perdu, et  les autre zones pour aller a destination
+    int NBColisLivre;
     Colis_t colis; // pour donner un colis au drone
+    pthread_mutex_t mDrone;
+    pthread_cond_t cDrone;
 }Drone_t;
 
 typedef struct Slot{

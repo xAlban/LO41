@@ -1,11 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <pthread.h>
+#include <unistd.h>
 #include "../headers/structure.h"
 #include "../headers/drone.h"
 #include "../headers/vaisseau.h"
 #include "../headers/client.h"
+#include "../headers/fonctions.h"
+
 
 void initAll();
 void DestroyAll();
@@ -17,30 +19,36 @@ int main(int argc, char* argv[]){
 
     initAll();
 
-    printf("Creation des threads client !\n");
+    BLEU("Creation des threads client !\n");
     for(i = 0; i<NB_CLIENT; ++i){
         ret = pthread_create(&t_client[i], NULL, fonction_client, &client[i]);
+        printf("Client thread %d creee\n", i);
         if(ret){
             exit(EXIT_FAILURE);
         }
     }
-    Sleep(2000);
+    //Sleep(2000);
+    sleep(2000);
 
-    printf("Creation des threads drones !\n");
+    VERT("Creation des threads drones !\n");
     for(i = 0; i<NB_DRONE; ++i){
         ret = pthread_create(&t_drone[i], NULL, fonction_drone, &drone[i]);
+        printf("Drone thread %d creee\n", i);
         if(ret){
             exit(EXIT_FAILURE);
         }
     }
-    Sleep(2000);
+    //Sleep(2000);
+    sleep(2000);
 
-    printf("Creation d'un thread vaisseau !\n");
+    JAUNE("Creation d'un thread vaisseau !\n");
     ret = pthread_create(&t_vaisseau, NULL, fonction_vaisseau, &vaisseau);
+    printf("Vaisseau thread creee\n");
     if(ret){
         exit(EXIT_FAILURE);
     }
-    Sleep(2000);
+    //Sleep(2000);
+    sleep(2000);
 
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_join(t_client[i], NULL);
@@ -58,19 +66,19 @@ int main(int argc, char* argv[]){
 void initAll(){
     int i,j,k,l;
 
-    printf("Initialisation des clients\n");
+    BLEU("Initialisation des clients\n");
     for(i = 0; i<NB_CLIENT; ++i){
         client[i] = initClient(i, client[i]);
     }
     printf("\n\n");
 
-    printf("Initialisation des drones\n");
+    VERT("Initialisation des drones\n");
     for(j = 0; j<NB_DRONE; ++j){
         drone[j] = Init_drone(j, drone[j]);
     }
     printf("\n\n");
 
-    printf("Initialisation du vaisseau mere\n");
+    JAUNE("Initialisation du vaisseau mere\n");
     vaisseau.NBColis = 0;
     vaisseau.NBDroneAttente = NB_DRONE;
     vaisseau.NBDronePerdu = 0;
@@ -80,44 +88,42 @@ void initAll(){
     vaisseau.NBColisRetour = 0;
     printf("\n");
 
-    printf("Initialisation des slots et des colis\n");
+    ROUGE("Initialisation des slots et des colis\n");
     for(k = 0; k<NB_SLOT-1; ++k){
         printf("Slot %d\n", k);
         vaisseau.slot[k] = initAllColis(&vaisseau, k);
     }
     vaisseau.slot[NB_SLOT].NBColisSlot = 0;
-    vaisseau.slot[NB_SLOT].colis[NBColisMax];
+    //vaisseau.slot[NB_SLOT].colis[NBColisMax];
     printf("\n\n");
 
 
-    printf("Tri des colis\n");
+    ROUGE("Tri des colis\n");
     for(l = 0; l<NB_SLOT-1; ++l){
         printf("Slot %d\n", l);
         vaisseau.slot[l] = triColis(vaisseau.slot[l]);
     }
     printf("\n\n");
 
-    printf("Connaitre chaque client attends combien de colis\n");
+    BLEU("Connaitre chaque client attends combien de colis\n");
     for(i = 0; i<NB_CLIENT; ++i){
         printf("Client %d attends %d colis\n", client[i].ID, client[i].NBColisAttente);
     }
     printf("Nombre total de colis a livrer est de %d\n", vaisseau.NBColis);
     printf("\n\n");
 
-    printf("Chargement des colis dans les slots\n\n");
+    ROUGE("Chargement des colis dans les slots\n\n");
 
-    printf("Initialisation des mutex\n");
+    ROUGE("Initialisation des mutex\n");
 
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_mutex_init(&client[i].mClient, NULL);
         pthread_cond_init(&client[i].cClient, NULL);
     }
 
-    for(j = 0; j<NB_SLOT-1; ++j){
-            for(i = 0; i<client[j].NBColisAttente; ++i){
-                pthread_mutex_init(&client[j].colis[i].mColis, NULL);
-                pthread_cond_init(&client[j].colis[i].cColis, NULL);
-            }
+    for(j = 0; j<NB_DRONE; ++j){
+        pthread_mutex_init(&drone[j].mDrone, NULL);
+        pthread_cond_init(&drone[j].cDrone, NULL);
     }
 
     pthread_mutex_init(&vaisseau.mVaisseau, NULL);
@@ -127,19 +133,16 @@ void initAll(){
 
 void DestroyAll(){
     int i;
-    int j;
-    printf("Destroy All Mutex And Condition\n");
+    ROUGE("Destroy All Mutex And Condition\n");
 
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_mutex_destroy(&client[i].mClient);
         pthread_cond_destroy(&client[i].cClient);
     }
 
-    for(j = 0; j<NB_SLOT-1; ++j){
-            for(i = 0; i<client[j].NBColisAttente; ++i){
-                pthread_mutex_destroy(&client[j].colis[i].mColis);
-                pthread_cond_destroy(&client[j].colis[i].cColis);
-            }
+    for(i = 0; i<NB_DRONE; ++i){
+        pthread_mutex_destroy(&drone[i].mDrone);
+        pthread_cond_destroy(&drone[i].cDrone);
     }
 
     pthread_mutex_destroy(&vaisseau.mVaisseau);
