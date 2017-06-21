@@ -33,22 +33,28 @@ void* fonction_client(void* arg){
     /*Si le nbre de colis que le client attend est nulle on arrete ce threads*/
     if(client->NBColisAttente==0){
 
-        printf("%sLe client %d n'a aucun colis en attente ! \n%s", BLUE, idClient, INIT);
+        printf("%sLe client %d n'a aucun colis en attente ! \n%s", CYAN, idClient, INIT);
 
     }else{
-
+      
         while(client->NBColisAttente !=0){
 
             pthread_mutex_lock(&client->mClient);
-
+            
+            /*J'attends que le drone m'appel*/
             pthread_cond_wait(&client->cClient, &client->mClient);
-            printf("%sClient %d appelle\n%s", BLUE, idClient, INIT);
+            pthread_mutex_unlock(&client->mClient);
+          
+            printf("%sClient %d est appelle\n%s", BLUE, idClient, INIT);
+            
+            pthread_mutex_lock(&client->mClient);
+          
             /*Cherche quel drone a son colis*/
             while(boolean){
 
                 for(i = 0; i<k; ++i){
 
-                    for(j = 0; j<NB_DRONE; ++j){
+                    for(j = 0; j<data.nbDrone; ++j){
 
                         if(idClient == drone[j].colis.ID_client && client->colis[i].poids == drone[j].colis.poids && client->colis[j].temps == drone[j].colis.temps){
 
@@ -56,7 +62,6 @@ void* fonction_client(void* arg){
 
                                 l = j;
                                 m = i;
-                                //printf("TROUVER\n");
                                 boolean = FALSE;
 
                             }
@@ -72,24 +77,34 @@ void* fonction_client(void* arg){
             boolean = TRUE;
 
             /*Si l'etat du colis est a 1 cest a dire que le colis est correct sans dommage sinon le client refuse de le prendre*/
-            if(drone[l].colis.etat==1){
+            if(drone[l].colis.etat == 1){
+              
                 printf("%sClient %d a pris son colis\n%s", BLUE, idClient, INIT);
                 client->colis[m].etatLivraison = 4;
                 client->NBColisRecu++;
+              
             }else{
+              
                 printf("%sClient %d refuse le colis car mauvais etat\n%s", BLUE, idClient, INIT);
                 client->retourColis++;
+              
             }
 
             drone[l].status = 3;
             client->NBColisAttente--;
             //pthread_cond_signal(&client->cClient);
             pthread_cond_broadcast(&client->cClient);
+          
             pthread_mutex_unlock(&client->mClient);
 
         }
-
-        printf("%sClient %d, n'a plus de colis en attente ! \n%s", BLUE, idClient, INIT);
+         
+        printf("%sClient %d, n'a plus de colis en attente !%s", CYAN, idClient, INIT);
+        if(client->retourColis>0){
+          
+            printf("%sMais j'ai refuse %d colis car ils sont en mauvais etat\n%s", CYAN, client->retourColis, INIT);
+        }
+        printf("\n");
 
     }
 
