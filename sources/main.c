@@ -60,7 +60,7 @@ int main(int argc, char* argv[]){
   
     if(t_drone == NULL){
       
-        fprintf(stderr,"Allocation impossible\n");
+        fprintf(stderr,"Allocation thread drone impossible\n");
         exit(EXIT_FAILURE);
       
     }
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]){
   
     if(t_client == NULL){
       
-        fprintf(stderr,"Allocation impossible\n");
+        fprintf(stderr,"Allocation thread client impossible\n");
         exit(EXIT_FAILURE);
       
     }
@@ -82,7 +82,8 @@ int main(int argc, char* argv[]){
     printf("Vaisseau thread creee\n");
   
     if(ret){
-      
+        
+        fprintf(stderr,"Creation thread vaisseau impossible\n");
         exit(EXIT_FAILURE);
       
     }
@@ -95,6 +96,7 @@ int main(int argc, char* argv[]){
       
         if(ret){
           
+            fprintf(stderr,"Creation thread client %d impossible\n", i);
             exit(EXIT_FAILURE);
           
         }
@@ -109,7 +111,8 @@ int main(int argc, char* argv[]){
         printf("Drone thread %d creee\n", i);
       
         if(ret){
-          
+             
+            fprintf(stderr,"Creation thread drone %d impossible\n", i);
             exit(EXIT_FAILURE);
           
         }
@@ -144,12 +147,21 @@ void initAll(){
     BLEU("Initialisation des clients\n");
     client = malloc(sizeof(Client_t) * data.nbClient);
   
+    if(client == NULL){
+      
+        fprintf(stderr,"Allocation client impossible\n");
+        exit(EXIT_FAILURE);
+      
+    }
+    
+    /*Allocation des colis sur le client, on prendra le nbre de colis max car on ne peut pas savoir en avance combien de colis attendra le client*/
     for(i = 0; i<data.nbClient; ++i){
       
         client[i].colis = malloc(sizeof(Colis_t) * data.nbColisMax);
       
     }
   
+    /*Initialisation des clients*/
     for(i = 0; i<data.nbClient; ++i){
       
         sleep(1);
@@ -159,8 +171,17 @@ void initAll(){
     printf("\n\n");
 
     VERT("Initialisation des drones\n");
+    /*Allocation des drones*/
     drone = malloc(sizeof(Drone_t) * data.nbDrone);
-  
+    
+    if(drone == NULL){
+      
+        fprintf(stderr,"Allocation drone impossible\n");
+        exit(EXIT_FAILURE);
+      
+    }
+    
+    /*Initialisation des drones*/
     for(i = 0; i<data.nbDrone; ++i){
       
         sleep(1);
@@ -177,27 +198,41 @@ void initAll(){
     vaisseau.NBDroneTravail = 0;
     vaisseau.Status = 0;
     vaisseau.NBColisRetour = 0;
+  
+    /*Allocation des slots du vaisseau*/
     vaisseau.slot = malloc(sizeof(Slot_t) * data.nbSlot);
   
     if(vaisseau.slot == NULL){
       
-        fprintf(stderr,"Allocation impossible\n");
+        fprintf(stderr,"Allocation des slots du vaisseau impossible\n");
         exit(EXIT_FAILURE);
       
     }
   
-    for(i = 0; i<data.nbSlot-1; ++i){
+    /*Allocation des colis du slot du vaisseau*/
+    for(i = 0; i<data.nbSlot; ++i){
       
-        vaisseau.slot[i].colis = malloc(sizeof(Colis_t) * data.nbColis);
+        /*Dernier slot cest pour les colis refuse ou colis que le client etait pas chez lui.
+        On ne connait le nbre de colis qui peut avoir dans le dernier slot donc on attribue le maximun des colis*/
+        if(i == data.nbSlot-1){
+            
+            vaisseau.slot[i].colis = malloc(sizeof(Colis_t) * data.nbColisMax);
+          
+        }else{
+            
+            vaisseau.slot[i].colis = malloc(sizeof(Colis_t) * data.nbColis);
+          
+        }
       
         if(vaisseau.slot[i].colis == NULL){
           
-            fprintf(stderr,"Allocation impossible\n");
+            fprintf(stderr,"Allocation des colis du slot %d du vaisseau impossible\n", i);
             exit(EXIT_FAILURE);
           
         }
       
     }
+    
     printf("\n");
     sleep(2);
     
@@ -229,6 +264,7 @@ void initAll(){
         sleep(1);
       
     }
+  
     printf("Nombre total de colis a livrer est de %d\n", vaisseau.NBColis);
     printf("\n\n");
 
@@ -271,7 +307,7 @@ void DestroyAll(){
       
     }
     
-    for(i = 0; i<data.nbColis; ++i){
+    for(i = 0; i<data.nbSlot; ++i){
       
         free(vaisseau.slot[i].colis);
         vaisseau.slot[i].colis = NULL;
