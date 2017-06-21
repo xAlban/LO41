@@ -48,8 +48,8 @@ int main(int argc, char* argv[]){
     printf("%sNombre de client : %d\n%s", YELLOW, data.nbClient, INIT);
     printf("%sNombre de colis par slot : %d\n%s", YELLOW, data.nbColis, INIT);
     
-    t_drone = malloc(sizeof(pthread_t) * nbDrone);
-    t_client = malloc(sizeof(pthread_t) * nbClient);
+    t_drone = malloc(sizeof(pthread_t) * data.nbDrone);
+    t_client = malloc(sizeof(pthread_t) * data.nbClient);
 
     initAll();
   
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]){
     }
   
     BLEU("Creation des threads client !\n");
-    for(i = 0; i<NB_CLIENT; ++i){
+    for(i = 0; i<data.nbClient; ++i){
         ret = pthread_create(&t_client[i], NULL, fonction_client, &client[i]);
         printf("Client thread %d creee\n", i);
         if(ret){
@@ -72,7 +72,7 @@ int main(int argc, char* argv[]){
     sleep(2);
 
     VERT("Creation des threads drones !\n");
-    for(i = 0; i<NB_DRONE; ++i){
+    for(i = 0; i<data.nbDrone; ++i){
         ret = pthread_create(&t_drone[i], NULL, fonction_drone, &drone[i]);
         printf("Drone thread %d creee\n", i);
         if(ret){
@@ -81,10 +81,10 @@ int main(int argc, char* argv[]){
     }
     sleep(2);
 
-    for(i = 0; i<NB_CLIENT; ++i){
+    for(i = 0; i<data.nbClient; ++i){
         pthread_join(t_client[i], NULL);
     }
-    for(i = 0; i<NB_DRONE; ++i){
+    for(i = 0; i<data.nbDrone; ++i){
         pthread_join(t_drone[i], NULL);
     }
     pthread_join(t_vaisseau, NULL);
@@ -99,16 +99,14 @@ int main(int argc, char* argv[]){
 void initAll(){
   
     int i;
-    
+  
+    BLEU("Initialisation des clients\n");
     client = malloc(sizeof(Client_t) * data.nbClient);
   
     for(i = 0; i<data.nbClient; ++i){
         client[i].colis = malloc(sizeof(Colis_t) * data.nbColisMax);
     }
   
-    drone = malloc(sizeof(Drone_t) * data.nbDrone);
-  
-    BLEU("Initialisation des clients\n");
     for(i = 0; i<data.nbClient; ++i){
         sleep(1);
         client[i] = initClient(i, client[i]);
@@ -116,6 +114,7 @@ void initAll(){
     printf("\n\n");
 
     VERT("Initialisation des drones\n");
+    drone = malloc(sizeof(Drone_t) * data.nbDrone);
     for(i = 0; i<data.nbDrone; ++i){
         sleep(1);
         drone[i] = Init_drone(i, drone[i]);
@@ -130,9 +129,10 @@ void initAll(){
     vaisseau.NBDroneTravail = 0;
     vaisseau.Status = 0;
     vaisseau.NBColisRetour = 0;
+    vaisseau.slot = malloc(sizeof(Slot_t) * data.nbSlot);
     printf("\n");
     sleep(2);
-
+    
     ROUGE("Initialisation des slots et des colis\n");
     for(i = 0; i<data.nbSlot-1; ++i){
         printf("%sSlot %d\n%s", MAGENTA, i, INIT);
@@ -190,6 +190,9 @@ void DestroyAll(){
         free(client[i].colis);
         client[i].colis = NULL;
     }
+    
+    free(vaisseau.slot);
+    vaisseau.slot = NULL;
   
     free(client);
     client = NULL;

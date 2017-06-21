@@ -20,11 +20,6 @@ Drone_t Init_drone(int i, Drone_t drone){
     return drone;
 }
 
-void DecrementerTotalColis(int idDrone){
-    vaisseau.NBColis--;
-    vaisseau.slot[idDrone].NBColisSlot--;
-}
-
 void* fonction_drone(void* arg){
 
     Drone_t *drone = (Drone_t*) arg;
@@ -109,7 +104,7 @@ void* fonction_drone(void* arg){
             printf("%sLe drone %d arrive a la zone %d\n%s", GREEN, drone->ID_drone, drone->zone, INIT);
 
             /*Si le client est chez lui on livre son colis sinon on rentre*/
-            if(client[idClient].etat==1){
+            if(client[idClient].etat == 1){
 
                 printf("%sLe client %d est chez lui, drone %d descends\n%s", GREEN, idClient, drone->ID_drone, INIT);
                 sleep(2);
@@ -166,6 +161,7 @@ void* fonction_drone(void* arg){
             printf("%sDrone %d arrive au vaisseau mere\n%s", GREEN, drone->ID_drone, INIT);
             printf("%sDrone %d lui reste %d min de batterie\n%s", MAGENTA, drone->ID_drone, drone->autonomie, INIT);
             vaisseau.NBDroneTravail--;
+          
             /*On met le zone du drone a 0 pour dire qu'il est bien au vaisseau mere*/
             drone->zone = 0;
 
@@ -208,7 +204,7 @@ void* fonction_drone(void* arg){
         /*Changement du status du drone pour dire qu'il est pret pour prendre un colis*/
         drone->status = 0;
 
-        if(drone->NBColisLivre == NB_COLIS){
+        if(drone->NBColisLivre == data.nbColis){
             drone->status = -2;
         }
 
