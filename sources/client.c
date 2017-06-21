@@ -24,10 +24,8 @@ void* fonction_client(void* arg){
 
     Client_t *client = (Client_t*) arg;
     int idClient = client->ID;
-
-    fflush(stdout);
-
     sleep(2);
+  
     int k = client->NBColisAttente;
     int i,j,l,m;
     BOOL boolean = TRUE;
@@ -45,7 +43,7 @@ void* fonction_client(void* arg){
 
             pthread_cond_wait(&client->cClient, &client->mClient);
             printf("%sClient %d appelle\n%s", BLUE, idClient, INIT);
-
+            /*Cherche quel drone a son colis*/
             while(boolean){
 
                 for(i = 0; i<k; ++i){

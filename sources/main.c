@@ -25,7 +25,6 @@ int main(int argc, char* argv[]){
     if(ret){
         exit(EXIT_FAILURE);
     }
-    //Sleep(2000);
     sleep(2);
   
     BLEU("Creation des threads client !\n");
@@ -36,10 +35,6 @@ int main(int argc, char* argv[]){
             exit(EXIT_FAILURE);
         }
     }
-    //Sleep(2000);
-
-    fflush(stdout);
-
     sleep(2);
 
     VERT("Creation des threads drones !\n");
@@ -50,20 +45,6 @@ int main(int argc, char* argv[]){
             exit(EXIT_FAILURE);
         }
     }
-    //Sleep(2000);
-
-    fflush(stdout);
-    sleep(2);
-
-    JAUNE("Creation d'un thread vaisseau !\n");
-    ret = pthread_create(&t_vaisseau, NULL, fonction_vaisseau, &vaisseau);
-    printf("Vaisseau thread creee\n");
-    if(ret){
-        exit(EXIT_FAILURE);
-    }
-    //Sleep(2000);
-    fflush(stdout);
-
     sleep(2);
 
     for(i = 0; i<NB_CLIENT; ++i){
@@ -145,11 +126,6 @@ void initAll(){
         pthread_cond_init(&client[i].cClient, NULL);
     }
 
-    for(j = 0; j<NB_DRONE; ++j){
-        pthread_mutex_init(&drone[j].mDrone, NULL);
-        pthread_cond_init(&drone[j].cDrone, NULL);
-    }
-
     pthread_mutex_init(&vaisseau.mVaisseau, NULL);
     pthread_cond_init(&vaisseau.cVaisseau, NULL);
     printf("\n\n");
@@ -162,11 +138,6 @@ void DestroyAll(){
     for(i = 0; i<NB_CLIENT; ++i){
         pthread_mutex_destroy(&client[i].mClient);
         pthread_cond_destroy(&client[i].cClient);
-    }
-
-    for(i = 0; i<NB_DRONE; ++i){
-        pthread_mutex_destroy(&drone[i].mDrone);
-        pthread_cond_destroy(&drone[i].cDrone);
     }
 
     pthread_mutex_destroy(&vaisseau.mVaisseau);

@@ -92,20 +92,17 @@ void* fonction_vaisseau(void* arg){
     vaisseau->Status = 1;
     JAUNE("Vaisseau mere en l'air, commencement des livraisons\n");
     sleep(2);
+    //printf("vaisseau status %d\n", vaisseau->Status);
   
-    /*Reveille les drones*/
-    int i;
-    for(i = 0; i<NB_DRONE; ++i){
-        pthread_cond_signal(&drone[i].cDrone);
-    }
-
     /*Tant que le nbre total de colis est superieur a 0 et que le status du vaisseau est en l'air, on continue a livrer les colis*/
     while(vaisseau->NBColis != 0 && vaisseau->Status == 1){
 
         pthread_mutex_lock(&vaisseau->mVaisseau);
 
-        pthread_cond_wait(&vaisseau->cVaisseau, &vaisseau->mVaisseau);
-
+        while(vaisseau->NBColis!=0){
+          pthread_cond_wait(&vaisseau->cVaisseau, &vaisseau->mVaisseau);
+        }
+      
         JAUNE("PLUS DE COLIS A LIVRER\n");
       
         vaisseau->Status = 0;
@@ -113,7 +110,7 @@ void* fonction_vaisseau(void* arg){
         pthread_mutex_unlock(&vaisseau->mVaisseau);
     }
 
-    JAUNE("ATERRISAGE DU VAISSEAU MERE A L'ENTREPROT\n");
+    JAUNE("ATTERRISAGE DU VAISSEAU MERE A L'ENTREPROT\n");
 
     pthread_exit(NULL);
 }

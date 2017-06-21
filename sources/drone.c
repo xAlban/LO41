@@ -28,9 +28,7 @@ void* fonction_drone(void* arg){
 
     Drone_t *drone = (Drone_t*) arg;
 
-    int idDrone = drone->ID_drone;
-
-    fflush(stdout);
+    //int idDrone = drone->ID_drone;
 
     sleep(2);
     int i = 0; // pointer sur le colis du slot
@@ -38,8 +36,6 @@ void* fonction_drone(void* arg){
     //printf("drone %d, slot %d, status %d, charge %d, autonomie %d, zone %d, nbre colis %d\n", drone->ID_drone, drone->slot, drone->status, drone->charge, drone->autonomie, drone->zone, drone->NBColisLivre);
 
     while(vaisseau.slot[drone->slot].NBColisSlot>0 && drone->status!=-2){
-
-        pthread_mutex_lock(&drone->mDrone);
 
         /*Si il n'y a plus de colis on envoie un signal au vaisseau pour dire qu'on rentre*/
         if(vaisseau.NBColis == 0){
@@ -57,10 +53,6 @@ void* fonction_drone(void* arg){
                     VERT("Recharge du drone ");
                     printf("%s%d\n%s", GREEN, drone->ID_drone, INIT);
                     drone->status = -1;
-
-                    //Sleep(100*AUTONOMIE);
-                    fflush(stdout);
-
                     sleep(AUTONOMIE/10);
                     drone->autonomie = AUTONOMIE;
                     VERT("Fin du rechargement du drone ");
@@ -86,22 +78,20 @@ void* fonction_drone(void* arg){
             }
             /*Si le couloir pour aller vers le client est occupe alors on attends un signal*/
             if(client[idClient].couloir[0] == 1){
-
+                pthread_mutex_lock(&client[idClient].mClient);
                 printf("%sCouloir utilise pour aller au client %d, j'attends\n%s", GREEN, idClient, INIT);
                 pthread_cond_wait(&client[idClient].cClient, &client[idClient].mClient);
                 printf("%sCouloir libere pour aller au client %d\n%s", GREEN, idClient, INIT);
+                pthread_mutex_unlock(&client[idClient].mClient);
 
             }
 
             /*J'emprunte le couloir pour aller a la zone*/
             printf("%sCouloir vide pour aller au client %d, j'y vais\n%s", GREEN, idClient, INIT);
             client[idClient].couloir[0] = 1;
-            pthread_cond_signal(&client[idClient].cClient);
+            //pthread_cond_signal(&client[idClient].cClient);
           
             vaisseau.NBDroneTravail++;
-
-            //Sleep(100*(drone->colis.temps/2));
-            fflush(stdout);
             sleep((drone->colis.temps/2)/10);
 
             drone->autonomie = drone->autonomie - (drone->colis.temps/2);
@@ -116,11 +106,13 @@ void* fonction_drone(void* arg){
                 drone->colis.etatLivraison = 2;
 
                 /*on envoie le signal au client pour lui dire qu'on est la*/
-                pthread_cond_signal(&client[idClient].cClient);
-
-                /*on attends le signal pour continuer*/
-                pthread_cond_wait(&client[idClient].cClient, &client[idClient].mClient);
+                //pthread_cond_signal(&client[idClient].cClient);
+                pthread_cond_broadcast(&client[idClient].cClient);
               
+                /*on attends le signal pour continuer*/
+                pthread_mutex_lock(&client[idClient].mClient);
+                pthread_cond_wait(&client[idClient].cClient, &client[idClient].mClient);
+                pthread_mutex_unlock(&client[idClient].mClient);
                 //printf("%sDrone %d, colis etat livraison %d\n%s", GREEN, drone->ID_drone, drone->colis.etatLivraison, INIT);
 
             }else{
@@ -135,17 +127,18 @@ void* fonction_drone(void* arg){
 
             /*Si le couloir pour rentrer est occupe on attends*/
             if(client[idClient].couloir[1] == 1){
-
+                pthread_mutex_lock(&client[idClient].mClient);
                 printf("%sDrone %d attends que le couloir pour rentrer soit vide\n%s", GREEN, drone->ID_drone, INIT);
                 pthread_cond_wait(&client[idClient].cClient, &client[idClient].mClient);
                 printf("%sCouloir libere pour rentrer au vaisseau Drone %d peut y aller\n%s", GREEN, drone->ID_drone, INIT);
+                pthread_mutex_unlock(&client[idClient].mClient);
 
             }
 
             /*J'emprunte le couloir pour rentrer*/
             printf("%sDrone %d prend le couloir retour\n%s", GREEN, drone->ID_drone, INIT);
             client[idClient].couloir[1] = 1;
-            pthread_cond_signal(&client[idClient].cClient);
+            //pthread_cond_signal(&client[idClient].cClient);
           
             /*on libere le couloir apres avoir emprunte le couloir pour rentrer*/
             client[idClient].couloir[0] = 0;
@@ -153,10 +146,7 @@ void* fonction_drone(void* arg){
             pthread_cond_signal(&client[idClient].cClient);
 
             drone->status = 4;
-
-            //Sleep(100*(drone->colis.temps/2));
-            fflush(stdout);
-            sleep((drone->colis.temps/2)/10);
+            sleep(drone->colis.temps/2);
 
             printf("%sDrone %d arrive au vaisseau mere\n%s", GREEN, drone->ID_drone, INIT);
             drone->autonomie = drone->autonomie - (drone->colis.temps/2);
@@ -185,10 +175,6 @@ void* fonction_drone(void* arg){
         if(drone->autonomie == 0 && drone->zone == 0){
 
             printf("%sRecharge du drone %d\n%s", GREEN, drone->ID_drone, INIT);
-
-            //Sleep(100*AUTONOMIE);
-            fflush(stdout);
-
             sleep(AUTONOMIE/10);
             drone->autonomie = AUTONOMIE;
             printf("%sFin du rechargement du drone %d\n%s", GREEN, drone->ID_drone, INIT);
@@ -208,9 +194,8 @@ void* fonction_drone(void* arg){
             drone->status = -2;
         }
 
-        pthread_mutex_unlock(&drone->mDrone);
     }
-
+    printf("%sDrone %d a fini de livrer ces colis\n%s", RED, drone->ID_drone, INIT);
     pthread_cond_signal(&vaisseau.cVaisseau);
 
     pthread_exit(NULL);

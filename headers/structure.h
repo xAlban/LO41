@@ -51,8 +51,6 @@ typedef struct Drone{
     int zone; //0 pour dans le vaisseau, -1 pour perdu, et  les autre zones pour aller a destination
     int NBColisLivre;
     Colis_t colis; // pour donner un colis au drone
-    pthread_mutex_t mDrone;
-    pthread_cond_t cDrone;
 }Drone_t;
 
 typedef struct Slot{
@@ -67,9 +65,9 @@ typedef struct Vaisseau{
     int NBSlot;
     int NBDroneTravail;
     int NBDronePerdu;
-	int Status; //0 sur terre, 1 en l'air
-	int NBDroneRepos;
-	int NBColisRetour;
+		int Status; //0 sur terre, 1 en l'air
+		int NBDroneRepos;
+		int NBColisRetour;
     pthread_mutex_t mVaisseau;
     pthread_cond_t cVaisseau;
 }Vaisseau_t;
