@@ -84,7 +84,7 @@ void* fonction_client(void* arg){
             drone[l].status = 3;
             client->NBColisAttente--;
             pthread_cond_signal(&client->cClient);
-
+            //pthread_cond_broadcast(&client->cClient);
             pthread_mutex_unlock(&client->mClient);
 
         }

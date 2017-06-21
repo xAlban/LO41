@@ -106,8 +106,7 @@ void* fonction_drone(void* arg){
                 drone->colis.etatLivraison = 2;
 
                 /*on envoie le signal au client pour lui dire qu'on est la*/
-                //pthread_cond_signal(&client[idClient].cClient);
-                pthread_cond_broadcast(&client[idClient].cClient);
+                pthread_cond_signal(&client[idClient].cClient);
               
                 /*on attends le signal pour continuer*/
                 pthread_mutex_lock(&client[idClient].mClient);
@@ -127,6 +126,7 @@ void* fonction_drone(void* arg){
 
             /*Si le couloir pour rentrer est occupe on attends*/
             if(client[idClient].couloir[1] == 1){
+              
                 pthread_mutex_lock(&client[idClient].mClient);
                 printf("%sDrone %d attends que le couloir pour rentrer soit vide\n%s", GREEN, drone->ID_drone, INIT);
                 pthread_cond_wait(&client[idClient].cClient, &client[idClient].mClient);
@@ -155,7 +155,7 @@ void* fonction_drone(void* arg){
 
             /*On libere le couloir pour rentrer apres arriver au vaisseau*/
             client[idClient].couloir[1] = 0;
-            printf("%sDrone %d libere le couloir 1 du client %d\n%s", GREEN, drone->ID_drone, drone->colis.ID_client, INIT);
+            printf("%sDrone %d libere le couloir retour du client %d\n%s", GREEN, drone->ID_drone, drone->colis.ID_client, INIT);
             pthread_cond_signal(&client[idClient].cClient);
           
             /*On teste si le l'etat du colis est mauvais alors on le met dans le dernier slot du vaisseau*/
