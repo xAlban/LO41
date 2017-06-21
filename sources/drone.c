@@ -77,7 +77,7 @@ void* fonction_drone(void* arg){
 
             }
             /*Si le couloir pour aller vers le client est occupe alors on attends un signal*/
-            if(client[idClient].couloir[0] == 1){
+            while(client[idClient].couloir[0] == 1){
                 pthread_mutex_lock(&client[idClient].mClient);
                 printf("%sCouloir utilise pour aller au client %d, j'attends\n%s", GREEN, idClient, INIT);
                 pthread_cond_wait(&client[idClient].cClient, &client[idClient].mClient);
@@ -125,7 +125,7 @@ void* fonction_drone(void* arg){
             printf("%sDrone %d a livre %d colis\n%s", GREEN, drone->ID_drone, drone->NBColisLivre, INIT);
 
             /*Si le couloir pour rentrer est occupe on attends*/
-            if(client[idClient].couloir[1] == 1){
+             while(client[idClient].couloir[1] == 1){
               
                 pthread_mutex_lock(&client[idClient].mClient);
                 printf("%sDrone %d attends que le couloir pour rentrer soit vide\n%s", GREEN, drone->ID_drone, INIT);
