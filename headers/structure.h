@@ -4,7 +4,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#define NB_DRONE 5 //nombre de drone
+#define NB_DRONE 3 //nombre de drone
 #define NB_COLIS 2 //nombre de colis
 #define AUTONOMIE 30 //capacite d'autonomie du drone
 #define NB_CLIENT 5
