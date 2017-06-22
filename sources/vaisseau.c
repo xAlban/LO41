@@ -38,7 +38,7 @@ Slot_t initAllColis(Vaisseau_t *vaisseau, int i){
     vaisseau->slot[i].NBColisSlot = 0;
     int j;
   
-    for(j = 0; j<data.nbSlot-1; ++j){
+    for(j = 0; j<data.nbColis-1; ++j){
  
         vaisseau->slot[i].colis[j] = Init_colis(i, j, vaisseau->slot[i].colis[j]);
         vaisseau->slot[i].NBColisSlot++;
@@ -125,7 +125,7 @@ void* fonction_vaisseau(void* arg){
     sleep(2);
   
     /*Tant que le nbre total de colis est superieur a 0 et que le status du vaisseau est en l'air, on continue a livrer les colis*/
-    while(vaisseau->NBColis != 0 && vaisseau->Status == 1){
+    while(vaisseau->NBColis != 0 && vaisseau->Status == 1 && appuyer == TRUE){
 
         while(vaisseau->NBColis!=0){
           
