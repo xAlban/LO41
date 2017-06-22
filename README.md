@@ -3,9 +3,10 @@ UTBM 2017 projet LO41
 Projet de LO41 P2017, ce projet consiste sur la simulation de livraison par drone.
 Réaliser par Michel HUANG et Alban ELEZI INFO 02. 
 
-Pour compiler: make pour compiler
+Pour compiler: make
 Pour exécuter le programme avec les valeurs par défauts: make run 
 Pour nettoyer les fichiers de compilation: make clean
+Ou faire directement le nottoyage et l'éxécution: make clean run
 
 Option de paramètre de compilation:
 
@@ -19,4 +20,4 @@ Tout les valeurs peuvent être modifié dans le fichier "structures.h", puis rec
 
 Signal:
 
-Vous pouvez utiliser la touche CTRL+C pour interrompre le processus grâce à l'envoie d'un signal SIGINT.
+Vous pouvez utiliser la touche CTRL+C pour le nottoyage ensuite interrompre le processus grâce à l'envoie d'un signal SIGINT.
