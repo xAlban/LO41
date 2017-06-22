@@ -12,7 +12,7 @@ Drone_t Init_drone(int i, Drone_t drone){
     drone.slot = i;
     drone.status = 0;
     drone.autonomie = AUTONOMIE;
-    drone.charge = get_random(CHARGEMAXI, 5);
+    drone.charge = get_random(15, CHARGEMAXI-15);
     drone.zone = 0;
     drone.NBColisLivre = 0;
     drone.NBColisRetour = 0;
@@ -21,15 +21,15 @@ Drone_t Init_drone(int i, Drone_t drone){
 }
 
 void* fonction_drone(void* arg){
-
+    
     Drone_t *drone = (Drone_t*) arg;
 
     //int idDrone = drone->ID_drone;
     
     int i = 0; // pointer sur le colis du slot
     int idClient;
-  
-    while(vaisseau.slot[drone->slot].NBColisSlot>0 && drone->status!=-2){
+
+    while(vaisseau.slot[drone->slot].NBColisSlot>0 && drone->status!=-2 && appuyer == TRUE){
       
         /*Si il n'y a plus de colis on envoie un signal au vaisseau pour dire qu'on rentre*/
         if(vaisseau.NBColis == 0){
@@ -174,9 +174,9 @@ void* fonction_drone(void* arg){
             if(drone->colis.etat==2 || client[idClient].etat == 2){
 
                 ROUGE("Colis mavais etat ou le client n'est pas chez lui, on place le colis dans le dernier slot\n");
-                vaisseau.slot[data.nbSlot].colis[vaisseau.NBColisRetour] = drone->colis;
-                vaisseau.slot[data.nbSlot].colis[vaisseau.NBColisRetour].etatLivraison = 0;
-                vaisseau.slot[data.nbSlot].NBColisSlot++;
+                vaisseau.slot[data.nbSlot-1].colis[vaisseau.NBColisRetour] = drone->colis;
+                vaisseau.slot[data.nbSlot-1].colis[vaisseau.NBColisRetour].etatLivraison = 0;
+                vaisseau.slot[data.nbSlot-1].NBColisSlot++;
                 vaisseau.NBColisRetour++;
                 drone->NBColisRetour++;
 
