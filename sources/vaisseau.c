@@ -16,7 +16,7 @@ Colis_t Init_colis(int i, int j, Colis_t colis){
     colis.poids = get_random(10, drone[j].charge-10);//donne un poid entre (la charge du drone) et (la charge du drone + 10)
     colis.temps = get_random(25, AUTONOMIE-25); // donne un temps que dois faire le drone pour un aller retour entre 5 min et 30 min
     colis.zone = client[colis.ID_client].zone;
-    colis.etat = 1; //get_random(2,1); etat du colis qui veut dire 1 pour correct et 2 pour mauvais etat du colis, ici je l'ai mis a 1
+    colis.etat = get_random(2,1); //etat du colis qui veut dire 1 pour correct et 2 pour mauvais etat du colis
     colis.etatLivraison = 0;
     client[colis.ID_client].colis[client[colis.ID_client].NBColisAttente] = colis;
     client[colis.ID_client].NBColisAttente++;

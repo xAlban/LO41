@@ -26,6 +26,7 @@ int main(int argc, char* argv[]){
     
     int ret = 0;
     int i;
+    appuyer = TRUE;
     srand(time(NULL));
   
     if(argc > 1){
@@ -340,7 +341,8 @@ void traitantSIGINT(int n){
     for(i = 0; i<data.nbClient; ++i){
         pthread_cancel(t_client[i]);
     }
-  
+    
+    appuyer = FALSE;
     ROUGE("APPUI SUR CTRL+C ARRET DU PROGRAMME! \n");
   
 }

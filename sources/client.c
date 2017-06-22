@@ -37,7 +37,7 @@ void* fonction_client(void* arg){
 
     }else{
       
-        while(client->NBColisAttente !=0){
+        while(client->NBColisAttente !=0 && appuyer == TRUE){
 
             pthread_mutex_lock(&client->mClient);
             

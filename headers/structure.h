@@ -80,5 +80,6 @@ Data_t data;
 Vaisseau_t vaisseau;
 Client_t *client;
 Drone_t *drone;
+BOOL appuyer;
 
 #endif // STRUCTURE_H_INCLUDED
